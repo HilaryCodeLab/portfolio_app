@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\BaddyAttendanceController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ChirpController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -30,5 +32,19 @@ Route::resource('chirps', ChirpController::class)
     ->only(['index', 'store', 'update', 'destroy'])
 
     ->middleware(['auth', 'verified']);
+
+Route::resource('attendances', AttendanceController::class)
+
+    ->only(['index','store','update','destroy'])
+    
+    ->middleware(['auth','verified']);
+
+Route::resource('baddy_attendances', BaddyAttendanceController::class)
+
+    ->only(['index', 'create', 'store', 'update', 'edit','destroy'])
+
+    ->middleware(['auth', 'verified']);
+
+    
 
 require __DIR__.'/auth.php';
