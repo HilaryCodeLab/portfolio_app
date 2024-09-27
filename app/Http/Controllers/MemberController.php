@@ -3,16 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
+use App\Http\Resources\MemberResource;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Inertia\Inertia;
+use Inertia\Response;
+use Illuminate\Validation\Rule;
 
 class MemberController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index():Response
     {
         //
+        $query = Member::query();
+        $members = $query->paginate(20)->onEachSide(1);
+        
+        return Inertia::render("Members/Index", [
+            "members" => MemberResource::collection($members),
+        ]);
     }
 
     /**
@@ -21,14 +33,22 @@ class MemberController extends Controller
     public function create()
     {
         //
+        return Inertia::render("Members/Create");
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request):RedirectResponse
     {
         //
+        $validated = $request->validate([
+            'name' => 'required|string|max:50',
+            'gender' => ['required', Rule::in(['Male', 'Female', 'Other'])],
+        ]);
+
+        $request->user()->members()->create($validated);
+        return redirect(route('members.index'));
     }
 
     /**

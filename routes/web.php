@@ -3,6 +3,7 @@
 use App\Http\Controllers\BaddyAttendanceController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ChirpController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -45,6 +46,10 @@ Route::resource('baddy_attendances', BaddyAttendanceController::class)
 
     ->middleware(['auth', 'verified']);
 
-    
+Route::resource('members', MemberController::class)
+
+    ->only(['index', 'create', 'store', 'update', 'edit','destroy'])
+
+    ->middleware(['auth', 'verified']);
 
 require __DIR__.'/auth.php';

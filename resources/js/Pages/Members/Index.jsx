@@ -4,7 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import { Link, Head, router } from '@inertiajs/react';
 
 
-export default function Index({ auth, baddyAttendances}) {
+export default function Index({ auth, members}) {
 
     const containerStyle = {
         // position:'relative',
@@ -44,15 +44,15 @@ export default function Index({ auth, baddyAttendances}) {
         <AuthenticatedLayout
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Attendances</h2>}>
-            <Head title="baddy attendances" />
+            <Head title="Members" />
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <PrimaryButton style={buttonStyle}>
                         <Link
-                            href={route('baddy_attendances.create')}
+                            href={route('members.create')}
                         >
                             <span>Create</span>
-                            <span className="hidden md:inline"> Attendance</span>
+                            <span className="hidden md:inline"> Member</span>
                         </Link>
                     </PrimaryButton>
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -62,26 +62,24 @@ export default function Index({ auth, baddyAttendances}) {
                             <table border="1" style={{ width: '100%', textAlign: 'left' }}>
                                 <thead>
                                     <tr>
-                                        <th style={{width: '15%'}}>Date</th>
-                                        <th style={{width: '15%'}}>Location</th>
-                                        <th style={{width: '50%'}}>Members</th>
-                                        <th style={{width: '20%'}}>Actions</th>
+                                        <th>Name</th>
+                                        <th>Gender</th>
+                                        {/* <th>Members</th> */}
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {baddyAttendances.map(attendance => (
-                                        <tr key={attendance.id}>
-                                            <td>{attendance.session_date}</td>
-                                            <td>{attendance.session_location}</td>
+                                    {members.data.map(member => (
+                                        <tr key={member.id}>
+                                            <td>{member.name}</td>
+                                            <td>{member.gender}</td>
+                                            {/* <td>{attendance.members}</td> */}
                                             <td>
-                                            {attendance.members.map((member)=> member.name).join(", ")}
-                                            </td>
-                                            <td>
-                                                <Link href={route('baddy_attendances.edit', attendance.id)}
+                                                <Link
                                                     className='font-medium text-red-600 dark:text-red-500 hover:underline mx-1' >
                                                     Edit
                                                 </Link>
-                                                <button onClick={(e) => deleteItem(attendance)}
+                                                <button 
                                                 className='font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1'>
                                                     Delete
                                                 </button>

@@ -23,9 +23,9 @@ class StoreBaddyAttendanceRequest extends FormRequest
     {
         return [
             //
-            'session_date' => 'required | date_format:Y-m-d',  
-            'session_location' => 'required | string | max: 50',
-            'members' => 'required | array | min: 2',
+            'session_date' => 'required|date_format:Y-m-d',  
+            'session_location' => 'required|string|max: 50',
+            'members' => 'required|array|min:2',
             'members.*' => 'exists:members,id',
         ];
     }

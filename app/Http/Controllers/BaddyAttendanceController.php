@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\BaddyAttendanceResource;
-use App\Http\Requests\StoreBaddyAttendanceRequest;
 use App\Models\Member;
 use App\Models\BaddyAttendance;
+use App\Http\Resources\BaddyAttendanceResource;
+use App\Http\Requests\StoreBaddyAttendanceRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class BaddyAttendanceController extends Controller
 {
@@ -24,9 +25,15 @@ class BaddyAttendanceController extends Controller
         // $data = BaddyAttendance::all();
         $query = BaddyAttendance::query();
         $attendances = $query->paginate(10)->onEachSide(1);
+        $baddyAttendances = BaddyAttendance::with('members')->get();
+
+        // return Inertia::render("BaddyAttendances/Index", [
+        //     "baddyAttendances" => BaddyAttendanceResource::collection($attendances),
+
+        // ]);
        
         return Inertia::render("BaddyAttendances/Index", [
-            "baddyAttendances" => BaddyAttendanceResource::collection($attendances),
+            "baddyAttendances" => $baddyAttendances,
         ]);
 
     }
@@ -44,32 +51,46 @@ class BaddyAttendanceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreBaddyAttendanceRequest $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        //
         try
         {
-            $baddyAttendance = BaddyAttendance::create([
-                'session_date' => $request->input('session_date'),
-                'session_location' => $request->input('session_location'),
+            Log::info($request->all());
+            Log::info('Form Submitted');
+
+            $validated = $request->validate([
+                'session_date' => 'required|date',
+                'session_location' => 'required|string|max:50',
+                'members' => 'required|array|min:2',
+                'members.*' => 'exists:members,id',
             ]);
-            console.log("success");
-            $baddyAttendance->members()->attach($request->input('members'));
+
+            $validated['session_date'] = Carbon::parse($validated['session_date'])->format('Y-m-d');
+            $user = $request->user();
+            \Log::info('Authenticated user: ', [$user]);
+          
+            // If it reaches here, validation has passed
+            \Log::info('Validation passed:', $validated);
             
+            $baddyAttendance = BaddyAttendance::create([
+                'session_date' => $validated['session_date'],
+                'session_location' => $validated['session_location'],
+                'user_id' => $user->id,
+            ]);
+    
+            // dd($baddyAttendance);
+            $baddyAttendance->members()->attach($validated['members']);
+
             return redirect(route('baddy_attendances.index'));
-            
-            // return Inertia::render('BaddyAttendances/Index');
-            // return \Inertia\Inertia::location(route('baddy_attendances.index'));
-            // return redirect()->route('baddy_attendances.index')->with('success', 'Baddy Attendance created successfully!');
-
+    
         }
-        catch(\Exception $e)
+        catch(\Illuminate\Validation\ValidationException $e)
         {
-            Log::error('Error creating attendance: ' . $e->getMessage());
-            return back()->with('error', 'There was an issue creating the attendance.');
+            // Log validation errors
+            \Log::info('Validation failed:', $e->errors());
+            return back()->withErrors($e->errors())->withInput();
         }
-      
-
+       
     }
 
     /**
@@ -83,16 +104,31 @@ class BaddyAttendanceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(BaddyAttendance $baddyAttendance)
+    public function edit($id)
     {
+        $baddyAttendance = BaddyAttendance::with('members')->findOrFail($id);
+        $members = Member::all();
+
         return Inertia::render('BaddyAttendances/Edit',[
             'baddyAttendance' => $baddyAttendance,
+            'members' => $members, 
         ]);
      
-        // return Inertia::render('BaddyAttendances/Edit',[
-        //     'baddyAttendance' => new BaddyAttendanceResource($baddyAttendance),
-        // ]);
+       
     }
+
+    // public function edit(BaddyAttendance $baddyAttendance)
+    // {
+    //     $baddyAttendance = BaddyAttendance::with('members')->get();
+
+    //     return Inertia::render('BaddyAttendances/Edit',[
+    //         'baddyAttendance' => $baddyAttendance,
+    //     ]);
+     
+    //     // return Inertia::render('BaddyAttendances/Edit',[
+    //     //     'baddyAttendance' => new BaddyAttendanceResource($baddyAttendance),
+    //     // ]);
+    // }
 
     /**
      * Update the specified resource in storage.
@@ -104,10 +140,17 @@ class BaddyAttendanceController extends Controller
 
             'session_date' => 'required | date',  
             'session_location' => 'required | string | max: 50',
-            'members' => 'required | string | max: 255', 
+            'members' => 'required|array|min:2',
+            'members.*' => 'exists:members,id',
         ]);
 
-        $baddyAttendance->update($data);
+        // $baddyAttendance->update($data);
+        $baddyAttendance->update([
+            'session_date' => $data['session_date'],
+            'session_location' => $data['session_location'],
+        ]);
+
+        $baddyAttendance->members()->sync($data['members']);
         
      
         return redirect(route('baddy_attendances.index')); 

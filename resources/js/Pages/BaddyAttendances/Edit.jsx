@@ -5,14 +5,16 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import DatePicker from 'react-datepicker';
 import { useForm, Head, Link } from '@inertiajs/react';
 import { format } from 'date-fns';
+import Checkbox from '@/Components/Checkbox';
 
 
-export default function Edit({ auth, baddyAttendance }) {
+export default function Edit({ auth, baddyAttendance, members }) {
 
     const {data, setData, post, errors, reset, processing } = useForm({
         session_date: baddyAttendance.session_date || "",
         session_location: baddyAttendance.session_location || "",
-        members: baddyAttendance.members || "",
+        // members: [],
+        members: baddyAttendance.members.map((member) => member.id),
         _method: "PUT",
     });
 
@@ -27,6 +29,33 @@ export default function Edit({ auth, baddyAttendance }) {
         setData('session_date', formattedDate);
     };
 
+    // const handleCheckboxChange = (id) => {
+    //     console.log(data.members)
+    //     setData('members', (prevMembers) => {
+    //         //for case that the checkbox is unchecked, then make sure to remove the id from the array, only get the id that does not match the checkbox id
+    //         if(prevMembers.includes(id))
+    //         {
+    //             return prevMembers.filter((memberId) => memberId !== id);
+    //         }
+    //         //otherwise, the checkbox is checked, then include the checkbox id in the array
+    //         else
+    //         {
+    //             return [...prevMembers, id];
+    //         }
+    //     });
+    // };
+
+    const handleCheckboxChange = (id) => {
+        if(data.members.includes(id))
+        {
+            setData('members', data.members.filter(memberId => memberId !== id));
+        }
+        else
+        {
+            setData('members', [...data.members, id]);
+        }
+       
+    };
     
     return (
         <AuthenticatedLayout
@@ -36,6 +65,7 @@ export default function Edit({ auth, baddyAttendance }) {
             <Head title="Edit Attendance" />
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    {console.log("current members: ", data.members)}
                     <form className="max-w-sm mx-auto" onSubmit={submit}>
                         <div className="mb-5">
                             <label htmlFor="session_date" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
@@ -68,14 +98,25 @@ export default function Edit({ auth, baddyAttendance }) {
                             <label htmlFor="members" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
                                 Members:
                             </label>
-                            <textarea id="members"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                value={data.members} onChange={e => setData('members', e.target.value)}></textarea>
+                            {members.map((member) => (
+                                <div key={member.id}>
+                                    <label>
+                                        <input 
+                                        type="checkbox"
+                                        // value={member.id}
+                                        checked={data.members.includes(member.id)}
+                                        onChange={() => handleCheckboxChange(member.id)}/>
+                                        {member.name}
+                                    </label>   
+                                </div>    
+                            ))}
                             <InputError message={errors.members} className="mt-2" />
                         </div>
                         <div className='mt-4 text-right'>
                             <Link href={route('baddy_attendances.index')}> Cancel </Link>
-                            <PrimaryButton className="mt-4" disabled={processing}>Submit</PrimaryButton>
+                            <PrimaryButton className="mt-4" disabled={processing}>
+                                {processing ? 'Updating...' : 'Update' }
+                            </PrimaryButton>
 
                         </div>
                         

@@ -1,12 +1,10 @@
-import React, {useState} from 'react';
+import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DatePicker from 'react-datepicker';
-// import Datepicker from "tailwind-datepicker-react"
 import { useForm, Head} from '@inertiajs/react';
 import { format} from 'date-fns';
-// import { newDate } from 'react-datepicker/dist/date_utils';
 
 
 
@@ -18,10 +16,19 @@ export default function Create({ auth, members }) {
         session_date: new Date(),
     });
 
-    const handleCheckboxChange = (memberId) => {
-        setData('members', data.members.includes(memberId)
-        ? data.members.filter(id => id !== memberId)
-        : [...data.members, memberId]);
+    // const handleCheckboxChange = (memberId) => {
+    //     setData('members', data.members.includes(memberId)
+    //     ? data.members.filter(id => id !== memberId)
+    //     : [...data.members, memberId]);
+    // };
+
+    const handleCheckboxChange = (e) => {
+        const value = parseInt(e.target.value);
+        if (data.members.includes(value)) {
+            setData('members', data.members.filter(id => id !== value));
+        } else {
+            setData('members', [...data.members, value]);
+        }
     };
 
     const handleDateChange = (date) => {
@@ -31,6 +38,7 @@ export default function Create({ auth, members }) {
 
     const submit = (e) => {
         e.preventDefault();
+        // post(route('baddy_attendances.store'));
         post(route('baddy_attendances.store'), { onSuccess: () => reset() });
     };
 
@@ -40,16 +48,22 @@ export default function Create({ auth, members }) {
     }
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout 
+        user={auth.user}
+        header={
+            <div className="flex justify-between items-center">
+                <h2 className="font-semibold text-xl text-black-800 dark:text-black-200 leading-tight">
+                    Create New Baddy Attendance
+                </h2>
+            </div>
+        }>
 
             <Head title="Baddy Attendances" />
-
             <form className="max-w-sm mx-auto" onSubmit={submit}>
                 <div className="mb-5">
                     <label htmlFor="session_date" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
                         Date:
                     </label>
-                   
                     <DatePicker 
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         selected={data.session_date}
@@ -60,7 +74,6 @@ export default function Create({ auth, members }) {
                         >
                     </DatePicker>
                 </div>
-
                 <div className="mb-5">
                     <label htmlFor="seesion_location" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
                         Location:
@@ -81,9 +94,10 @@ export default function Create({ auth, members }) {
                                 style={checkBoxSyle} 
                                 className="form-check-input"
                                 value= {member.id}
-                                id={`member ${member.id}`}
-                                checked = {data.members.includes(member.id)}
-                                onChange = {() => handleCheckboxChange(member.id)}
+                                onChange={handleCheckboxChange}
+                                // id={`member ${member.id}`}
+                                // checked = {data.members.includes(member.id)}
+                                // onChange = {() => handleCheckboxChange(member.id)}
                             />
                             <label 
                                 className="form-check-label" 
@@ -91,7 +105,6 @@ export default function Create({ auth, members }) {
                                 {member.name}
                             </label>
                         </div>
-
                     )}
                     <InputError message={errors.members} className="mt-2" />
                 </div>
