@@ -117,19 +117,6 @@ class BaddyAttendanceController extends Controller
        
     }
 
-    // public function edit(BaddyAttendance $baddyAttendance)
-    // {
-    //     $baddyAttendance = BaddyAttendance::with('members')->get();
-
-    //     return Inertia::render('BaddyAttendances/Edit',[
-    //         'baddyAttendance' => $baddyAttendance,
-    //     ]);
-     
-    //     // return Inertia::render('BaddyAttendances/Edit',[
-    //     //     'baddyAttendance' => new BaddyAttendanceResource($baddyAttendance),
-    //     // ]);
-    // }
-
     /**
      * Update the specified resource in storage.
      */

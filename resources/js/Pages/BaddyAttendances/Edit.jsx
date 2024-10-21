@@ -5,7 +5,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import DatePicker from 'react-datepicker';
 import { useForm, Head, Link } from '@inertiajs/react';
 import { format } from 'date-fns';
-import Checkbox from '@/Components/Checkbox';
+// import Checkbox from '@/Components/Checkbox';
 
 
 export default function Edit({ auth, baddyAttendance, members }) {
@@ -28,22 +28,6 @@ export default function Edit({ auth, baddyAttendance, members }) {
         const formattedDate = format(date, 'yyyy-MM-dd');
         setData('session_date', formattedDate);
     };
-
-    // const handleCheckboxChange = (id) => {
-    //     console.log(data.members)
-    //     setData('members', (prevMembers) => {
-    //         //for case that the checkbox is unchecked, then make sure to remove the id from the array, only get the id that does not match the checkbox id
-    //         if(prevMembers.includes(id))
-    //         {
-    //             return prevMembers.filter((memberId) => memberId !== id);
-    //         }
-    //         //otherwise, the checkbox is checked, then include the checkbox id in the array
-    //         else
-    //         {
-    //             return [...prevMembers, id];
-    //         }
-    //     });
-    // };
 
     const handleCheckboxChange = (id) => {
         if(data.members.includes(id))

@@ -10,11 +10,14 @@ export default function Create({ auth }) {
     const { data, setData, post, errors, processing, reset } = useForm({
         name: "",
         gender: "",
+        amount: 10,
+        addOnAmount: 0,
 
     });
 
     const onSubmit = (e) => {
         e.preventDefault();
+        setData('total', ((data.amount * data.baddyAttendancesCount) + data.addOnAmount));
         post(route("members.store"), { onSuccess: () => reset() });
     };
 
@@ -50,7 +53,7 @@ export default function Create({ auth }) {
                                 />
                                 <InputError message={errors.name} className="mt-2" />
                             </div>
-                            <div className="mt-4">
+                            <div className="mt-4 ">
                                 <InputLabel htmlFor="member_gender" value="Gender" />
                                 <select
                                     name="gender"
@@ -65,9 +68,34 @@ export default function Create({ auth }) {
                                 </select>
                                 <InputError message={errors.gender} className="mt-2" />
                             </div>
+                            <div className="mt-4">
+                                <InputLabel htmlFor="amount" value="amount" />
+                                <TextInput
+                                    id="amount"
+                                    type="number"
+                                    name="amount"
+                                    value={data.amount}
+                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                    isFocused={true}
+                                    onChange={(e) => setData("amount", e.target.value)}
+                                />
+                                <InputError message={errors.amount} className="mt-2" />
+                            </div>
+                            <div className="mt-4">
+                                <InputLabel htmlFor="addOnAmount" value="addOnAmount" />
+                                <TextInput
+                                    id="addOnAmount"
+                                    type="number"
+                                    name="addOnAmount"
+                                    value={data.addOnAmount}
+                                    className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                                    isFocused={true}
+                                    onChange={(e) => setData("addOnAmount", e.target.value)}
+                                />
+                                <InputError message={errors.addOnAmount} className="mt-2" />
+                            </div>
                             <div className="mt-6 md:w-1/2">
                                 <PrimaryButton className="mt-4" disabled={processing}>Create</PrimaryButton>
-                               
                             </div>
                         </form>
 

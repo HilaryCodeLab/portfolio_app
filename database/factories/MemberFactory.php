@@ -22,7 +22,9 @@ class MemberFactory extends Factory
         return [
             'name' => fake()->name(),
             'gender' => fake()->randomElement(['Male', 'Female', 'Other']),
+            'amount' => 10,
             'user_id' => 1,
+            
           
             
         ];

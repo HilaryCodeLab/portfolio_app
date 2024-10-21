@@ -32,15 +32,16 @@ export default function Index({ auth, members}) {
 
     };
 
-    const deleteItem = (attendance) =>{
+    const deleteItem = (member) =>{
         if (!window.confirm("Are you sure you want to delete?")){
             return;
         }
-        router.delete(route("baddy_attendances.destroy", attendance.id));
+        router.delete(route("members.destroy", member.id));
     }
 
 
     return (
+        
         <AuthenticatedLayout
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Attendances</h2>}>
@@ -64,22 +65,30 @@ export default function Index({ auth, members}) {
                                     <tr>
                                         <th>Name</th>
                                         <th>Gender</th>
+                                        <th>Total Attendance</th>
+                                        {/* <th>Add On</th> */}
+                                        <th>Amount Owed</th>
                                         {/* <th>Members</th> */}
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {members.data.map(member => (
+                                    {members.map(member => (
                                         <tr key={member.id}>
                                             <td>{member.name}</td>
                                             <td>{member.gender}</td>
+                                            <td>{member.baddy_attendances_count}</td>
+                                            {/* <td>$ {member.addOnAmount}</td> */}
+                                            <td>$ {member.total.toFixed(2)}</td>
+
                                             {/* <td>{attendance.members}</td> */}
                                             <td>
                                                 <Link
+                                                    href={route('members.edit', member.id)}
                                                     className='font-medium text-red-600 dark:text-red-500 hover:underline mx-1' >
                                                     Edit
                                                 </Link>
-                                                <button 
+                                                <button onClick={(e)=>deleteItem(member)}
                                                 className='font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1'>
                                                     Delete
                                                 </button>
