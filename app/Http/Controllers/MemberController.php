@@ -18,17 +18,35 @@ class MemberController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index():Response
+    public function index(Request $request)
     {
-        $members = Member::withCount('baddyAttendances')->get()->map(function ($member){
-            // $member->total = $member->amount * $member->baddy_attendaces_count;
+        $search = $request->input('search');
+        $sortField = $request->input('sortField', 'name');
+        $sortDirection = $request->input('sortDirection', 'asc');
+
+        //query members and apply filters
+        $members = Member::withCount('baddyAttendances')->when($search, function($query, $search)
+        {
+            $query->where('name','like',"%{$search}%")
+                  ->orWhere('gender', 'like', "%{$search}%");  
+        })
+        ->get()->map(function ($member){
             $member->updateTotal();
             \Log::info($member);
             return $member;                
         });
 
+        //apply sorting
+        $members = $members->sortBy([
+            [$sortField, $sortDirection],
+            ['total', $sortDirection],
+        ])->values();
+
         return Inertia::render("Members/Index", [
             'members' => $members,
+            'search'=> $search,
+            'sortField'=> $sortField,
+            'sortDirection'=> $sortDirection,
         ]);
 
         // $query = Member::query();

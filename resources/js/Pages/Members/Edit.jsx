@@ -70,7 +70,7 @@ export default function Edit({ auth, member, baddyAttendances }) {
                             </div>
                             <div className="mb-5">
                                 <label htmlFor="amount" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
-                                    Amount Owed
+                                    Amount 
                                 </label>
                                 <input
                                     type="number"
@@ -96,7 +96,7 @@ export default function Edit({ auth, member, baddyAttendances }) {
                             </div>
                             <div className="mb-5">
                                 <label htmlFor="total" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
-                                    Total $
+                                    Total Owed $
                                 </label>
                                 <input
                                     type="number"
