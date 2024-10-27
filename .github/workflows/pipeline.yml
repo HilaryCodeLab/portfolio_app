@@ -2,8 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: "*" 
-  pull_request:
+    branches: "*"
     branches: [ $default-branch ]
 
 jobs:
@@ -15,8 +14,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-<<<<<<< Updated upstream
-      run: docker build . --file docker/8.3/Dockerfile --tag portfolio-app:$(date +%s)
-=======
-      run: docker build docker/8.3 --file docker/8.3/Dockerfile --tag portfolio-app:$(date +%s)
->>>>>>> Stashed changes
+      run: docker build docker/8.3 --file docker/8.3/Dockerfile --tag portfolio-app:$(date +%s) --build-arg WWWGROUP=1000
