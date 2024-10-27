@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build docker/8.3 --file docker/8.3/Dockerfile --tag portfolio-app:$(date +%s)
+      run: docker build docker/8.3 --file docker/8.3/Dockerfile --tag portfolio-app:$(date +%s) --build-arg WWWGROUP=1000
