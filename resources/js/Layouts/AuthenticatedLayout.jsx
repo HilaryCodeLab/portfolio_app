@@ -27,6 +27,12 @@ export default function Authenticated({ user, header, children }) {
                                 <NavLink href={route('chirps.index')} active={route().current('chirps.index')}>
                                     Chirps
                                 </NavLink>
+                                <NavLink href={route('members.index')} active={route().current('members.index')}>
+                                    Members
+                                </NavLink>
+                                <NavLink href={route('baddy_attendances.index')} active={route().current('baddy_attendances.index')}>
+                                    Baddy Attendances
+                                </NavLink>
 
                             </div>
                         </div>
@@ -98,6 +104,12 @@ export default function Authenticated({ user, header, children }) {
                     <div className="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('baddy_attendances.index')} active={route().current('baddy_attendances.index')}>
+                            Baddy Attendances
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('members.index')} active={route().current('members.index')}>
+                            Members
                         </ResponsiveNavLink>
                         <ResponsiveNavLink href={route('chirps.index')} active={route().current('chirps.index')}>
                             Chirps

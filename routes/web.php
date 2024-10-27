@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\BaddyAttendanceController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ChirpController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +31,24 @@ Route::middleware('auth')->group(function () {
 Route::resource('chirps', ChirpController::class)
 
     ->only(['index', 'store', 'update', 'destroy'])
+
+    ->middleware(['auth', 'verified']);
+
+Route::resource('attendances', AttendanceController::class)
+
+    ->only(['index','store','update','destroy'])
+    
+    ->middleware(['auth','verified']);
+
+Route::resource('baddy_attendances', BaddyAttendanceController::class)
+
+    ->only(['index', 'create', 'store', 'update', 'edit','destroy'])
+
+    ->middleware(['auth', 'verified']);
+
+Route::resource('members', MemberController::class)
+
+    ->only(['index', 'create', 'store', 'update', 'edit','destroy'])
 
     ->middleware(['auth', 'verified']);
 
