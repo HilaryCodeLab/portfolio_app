@@ -41,7 +41,6 @@ RUN apt-get update \
     && npm install -g npm \
     && npm install -g pnpm \
     && npm install -g bun \
-    && npm install \
     && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /etc/apt/keyrings/yarn.gpg >/dev/null \
     && echo "deb [signed-by=/etc/apt/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list \
     && curl -sS https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/keyrings/pgdg.gpg >/dev/null \
@@ -66,7 +65,8 @@ COPY docker/8.3/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker/8.3/php.ini /etc/php/8.3/cli/conf.d/99-sail.ini
 COPY --chmod=777 . /var/www/html
 
-RUN npm run build
+RUN npm install \
+    && npm run build
 
 RUN chmod +x /usr/local/bin/start-container
 
