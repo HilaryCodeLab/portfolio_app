@@ -59,7 +59,7 @@ export default function Index({ auth, baddyAttendances}) {
                     
                         <div className="p-6 text-gray-900">
                           
-                            <table border="1" style={{ width: '100%', textAlign: 'left' }}>
+                            <table border="1" style={{ width: '100%', textAlign: 'center' }}>
                                 <thead>
                                     <tr>
                                         <th style={{width: '15%'}}>Date</th>

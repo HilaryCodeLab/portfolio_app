@@ -96,12 +96,13 @@ export default function Index({ auth, members, search, sortField, sortDirection 
             <Head title="Members" />
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="flex justify-between mb-4">
-                        <PrimaryButton style={buttonStyle}>
+                    <div className="flex flex-col md:flex-row md:justify-between mb-4 space-y-2 md:space-y-0 md:space-x-4">
+                        <PrimaryButton style={buttonStyle} className="flex items-center justify-center md:justify-start w-full md:w-auto">
                             <Link
                                 href={route('members.create')}
+                                className="flex items-center justify-center"
                             >
-                                <span>Create</span>
+                                <span className="mr-2">Create</span>
                                 <span className="hidden md:inline"> Member</span>
                             </Link>
                         </PrimaryButton>
@@ -112,19 +113,19 @@ export default function Index({ auth, members, search, sortField, sortDirection 
                             onChange={handleSearchChange}
                             placeholder="search name or gender here"
                             style={buttonStyle}
-                            className="border px-2 py-1 rounded"
+                            className="border px-4 py-2 rounded w-full md:w-auto"
                         />
-                        <div className="flex space-x-2">
+                        <div className="flex flex-col md:flex-row md:space-x-2 w-full md:w-auto space-y-2 md:space-y-0">
                             <select value={sortBy} onChange={(e)=>handleSortChange(e.target.value, direction)}
                                 style={buttonStyle}
-                                className="border px-2 py-1 rounded">
+                                className="border px-4 py-2 rounded w-full md:w-auto">
                                     <option value="name">Name</option>
                                     <option value="gender">Gender</option>
                                     <option value="total">Highest Total</option>
                             </select>
                             <select value={direction} onChange={(e)=>handleSortChange(sortBy, e.target.value)}
                                 style={buttonStyle}
-                                 className="border px-2 py-1 rounded">
+                                 className="border px-4 py-2 rounded w-full md:w-auto">
                                     <option value="asc">Ascending</option>
                                     <option value="desc">Descending</option>
                             </select>
@@ -135,7 +136,7 @@ export default function Index({ auth, members, search, sortField, sortDirection 
 
                         <div className="p-6 text-gray-900">
 
-                            <table border="1" style={{ width: '100%', textAlign: 'left' }}>
+                            <table border="1" style={{ width: '100%', textAlign: 'center' }}>
                                 <thead>
                                     <tr>
                                         <th>Name</th>
