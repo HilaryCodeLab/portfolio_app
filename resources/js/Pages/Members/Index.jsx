@@ -92,7 +92,7 @@ export default function Index({ auth, members, search, sortField, sortDirection 
 
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Attendances</h2>}>
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Members</h2>}>
             <Head title="Members" />
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">

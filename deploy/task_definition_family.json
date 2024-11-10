@@ -1,0 +1,297 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-2:816069145903:task-definition/task_definition_family:17",
+    "containerDefinitions": [
+        {
+            "name": "laravel_test",
+            "image": "816069145903.dkr.ecr.ap-southeast-2.amazonaws.com/portfolio-app:1.2.2",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "appport",
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                },
+                {
+                    "name": "viteport",
+                    "containerPort": 5173,
+                    "hostPort": 5173,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "XDEBUG_MODE",
+                    "value": "develop,debug"
+                },
+                {
+                    "name": "XDEBUG_CONFIG",
+                    "value": "client_host=host.docker.internal"
+                },
+                {
+                    "name": "IGNITION_LOCAL_SITES_PATH",
+                    "value": "/var/www/html"
+                },
+                {
+                    "name": "LARAVEL_SAIL",
+                    "value": "1"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "dependsOn": [
+                {
+                    "containerName": "redis",
+                    "condition": "START"
+                },
+                {
+                    "containerName": "meilisearch",
+                    "condition": "START"
+                },
+                {
+                    "containerName": "mailpit",
+                    "condition": "START"
+                },
+                {
+                    "containerName": "selenium",
+                    "condition": "START"
+                }
+            ],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/task_definition_family",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "ap-southeast-2",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        },
+        {
+            "name": "redis",
+            "image": "redis:alpine",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "redisport",
+                    "containerPort": 6379,
+                    "hostPort": 6379,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": false,
+            "environment": [],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/task_definition_family",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "ap-southeast-2",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        },
+        {
+            "name": "meilisearch",
+            "image": "getmeili/meilisearch:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "meiilisearchport",
+                    "containerPort": 7700,
+                    "hostPort": 7700,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": false,
+            "environment": [
+                {
+                    "name": "MEILI_NO_ANALYTICS",
+                    "value": "false"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [
+                {
+                    "sourceVolume": "sail-redis",
+                    "containerPath": "/data",
+                    "readOnly": false
+                }
+            ],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/task_definition_family",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "ap-southeast-2",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        },
+        {
+            "name": "mailpit",
+            "image": "axllent/mailpit:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "mailport",
+                    "containerPort": 1025,
+                    "hostPort": 1025,
+                    "protocol": "tcp"
+                },
+                {
+                    "name": "dashboardport",
+                    "containerPort": 8025,
+                    "hostPort": 8025,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": false,
+            "environment": [],
+            "environmentFiles": [],
+            "mountPoints": [
+                {
+                    "sourceVolume": "sail-meilisearch",
+                    "containerPath": "/meili_data",
+                    "readOnly": false
+                }
+            ],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/task_definition_family",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "ap-southeast-2",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        },
+        {
+            "name": "selenium",
+            "image": "selenium/standalone-chrome:latest",
+            "cpu": 0,
+            "portMappings": [],
+            "essential": false,
+            "environment": [],
+            "environmentFiles": [],
+            "mountPoints": [
+                {
+                    "sourceVolume": "selenium",
+                    "containerPath": "/dev/shm",
+                    "readOnly": false
+                }
+            ],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/task_definition_family",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "ap-southeast-2",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "task_definition_family",
+    "taskRoleArn": "arn:aws:iam::816069145903:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::816069145903:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "revision": 17,
+    "volumes": [
+        {
+            "name": "sail-redis",
+            "host": {}
+        },
+        {
+            "name": "sail-meilisearch",
+            "host": {}
+        },
+        {
+            "name": "selenium",
+            "host": {}
+        }
+    ],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.28"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "ecs.capability.container-ordering"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "4096",
+    "memory": "8192",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2024-11-04T07:33:31.120Z",
+    "registeredBy": "arn:aws:iam::816069145903:root",
+    "tags": []
+}
