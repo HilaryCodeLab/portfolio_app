@@ -66,7 +66,8 @@ COPY docker/8.3/php.ini /etc/php/8.3/cli/conf.d/99-sail.ini
 COPY --chmod=777 . /var/www/html
 
 RUN npm install \
-    && npm run build
+    && npm run build \
+    && composer install
 
 RUN chmod +x /usr/local/bin/start-container
 
