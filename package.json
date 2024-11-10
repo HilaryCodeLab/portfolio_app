@@ -26,7 +26,6 @@
         "lodash": "^4.17.21",
         "react-datepicker": "^7.3.0",
         "react-table": "^7.8.0",
-        "tailwind-datepicker-react": "^1.4.3",
-        "vite": "^5.4.0"
+        "tailwind-datepicker-react": "^1.4.3"
     }
 }
