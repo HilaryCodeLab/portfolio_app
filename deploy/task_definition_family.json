@@ -39,7 +39,12 @@
                     "value": "1"
                 }
             ],
-            "environmentFiles": [],
+            "environmentFiles": [
+                {
+                    "value": "arn:aws:s3:::ecs-deployment-secrets/.env",
+                    "type": "s3"
+                }
+            ],
             "mountPoints": [],
             "volumesFrom": [],
             "dependsOn": [
