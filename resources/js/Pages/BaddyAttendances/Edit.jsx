@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 
 export default function Edit({ auth, baddyAttendance, members }) {
 
-    const {data, setData, post, errors, reset, processing } = useForm({
+    const { data, setData, post, errors, reset, processing } = useForm({
         session_date: baddyAttendance.session_date || "",
         session_location: baddyAttendance.session_location || "",
         // members: [],
@@ -21,7 +21,7 @@ export default function Edit({ auth, baddyAttendance, members }) {
     const submit = (e) => {
         e.preventDefault();
         post(route("baddy_attendances.update", baddyAttendance.id));
-    
+
     };
 
     const handleDateChange = (date) => {
@@ -30,17 +30,20 @@ export default function Edit({ auth, baddyAttendance, members }) {
     };
 
     const handleCheckboxChange = (id) => {
-        if(data.members.includes(id))
-        {
+        if (data.members.includes(id)) {
             setData('members', data.members.filter(memberId => memberId !== id));
         }
-        else
-        {
+        else {
             setData('members', [...data.members, id]);
         }
-       
+
     };
-    
+
+    const checkBoxSyle = {
+        // padding: '10px 10px',
+        margin: '10px 10px',
+    }
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -85,25 +88,27 @@ export default function Edit({ auth, baddyAttendance, members }) {
                             {members.map((member) => (
                                 <div key={member.id}>
                                     <label>
-                                        <input 
-                                        type="checkbox"
-                                        // value={member.id}
-                                        checked={data.members.includes(member.id)}
-                                        onChange={() => handleCheckboxChange(member.id)}/>
+                                        <input
+                                            type="checkbox"
+                                            style={checkBoxSyle}
+                                            className="form-check-input"
+                                            // value={member.id}
+                                            checked={data.members.includes(member.id)}
+                                            onChange={() => handleCheckboxChange(member.id)} />
                                         {member.name}
-                                    </label>   
-                                </div>    
+                                    </label>
+                                </div>
                             ))}
                             <InputError message={errors.members} className="mt-2" />
                         </div>
                         <div className='mt-4 text-right'>
                             <Link href={route('baddy_attendances.index')}> Cancel </Link>
                             <PrimaryButton className="mt-4" disabled={processing}>
-                                {processing ? 'Updating...' : 'Update' }
+                                {processing ? 'Updating...' : 'Update'}
                             </PrimaryButton>
 
                         </div>
-                        
+
                     </form>
                 </div>
             </div>

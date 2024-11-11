@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { Link, Head, router } from '@inertiajs/react';
 import TextInput from "@/Components/TextInput";
-import {Inertia} from '@inertiajs/inertia';
+import { Inertia } from '@inertiajs/inertia';
 import _ from "lodash";
 
 export default function Index({ auth, members, search, sortField, sortDirection }) {
@@ -46,10 +46,10 @@ export default function Index({ auth, members, search, sortField, sortDirection 
     const [sortBy, setSortBy] = useState(sortField || 'name');
     const [direction, setDirection] = useState(sortDirection || 'asc');
 
-    const handleSearch = _.debounce((query) =>{
+    const handleSearch = _.debounce((query) => {
         Inertia.get(route('members.index'), {
             search: query,
-        },{
+        }, {
             preserveState: true,
             replace: true,
         });
@@ -60,20 +60,6 @@ export default function Index({ auth, members, search, sortField, sortDirection 
         setSearchQuery(e.target.value);
         handleSearch(e.target.value);
     }
-
-    // const handleSearchChange = (e) => {
-       
-    //     setSearchQuery(e.target.value);
-    //     Inertia.get(route('members.index'), {
-    //         search: e.target.value,
-    //         sortField: sortBy,
-    //         sortDirection: direction,
-
-    //     }, {
-    //         preserveState: true,
-    //         replace: true,
-    //     });
-    // };
 
     const handleSortChange = (field, dir) => {
         setSortBy(field);
@@ -87,6 +73,8 @@ export default function Index({ auth, members, search, sortField, sortDirection 
             replace: true,
         });
     };
+
+    const hasActions = members.some(member => member.user_id === auth.user.id);
 
     return (
 
@@ -116,18 +104,18 @@ export default function Index({ auth, members, search, sortField, sortDirection 
                             className="border px-4 py-2 rounded w-full md:w-auto"
                         />
                         <div className="flex flex-col md:flex-row md:space-x-2 w-full md:w-auto space-y-2 md:space-y-0">
-                            <select value={sortBy} onChange={(e)=>handleSortChange(e.target.value, direction)}
+                            <select value={sortBy} onChange={(e) => handleSortChange(e.target.value, direction)}
                                 style={buttonStyle}
                                 className="border px-4 py-2 rounded w-full md:w-auto">
-                                    <option value="name">Name</option>
-                                    <option value="gender">Gender</option>
-                                    <option value="total">Highest Total</option>
+                                <option value="name">Name</option>
+                                <option value="gender">Gender</option>
+                                <option value="total">Total</option>
                             </select>
-                            <select value={direction} onChange={(e)=>handleSortChange(sortBy, e.target.value)}
+                            <select value={direction} onChange={(e) => handleSortChange(sortBy, e.target.value)}
                                 style={buttonStyle}
-                                 className="border px-4 py-2 rounded w-full md:w-auto">
-                                    <option value="asc">Ascending</option>
-                                    <option value="desc">Descending</option>
+                                className="border px-4 py-2 rounded w-full md:w-auto">
+                                <option value="asc">Ascending</option>
+                                <option value="desc">Descending</option>
                             </select>
 
                         </div>
@@ -144,8 +132,15 @@ export default function Index({ auth, members, search, sortField, sortDirection 
                                         <th>Total Attendance</th>
                                         {/* <th>Add On</th> */}
                                         <th>Amount Owed</th>
-                                        {/* <th>Members</th> */}
-                                        <th>Actions</th>
+                                        { hasActions &&  <th>Actions</th> }
+                                        {/* {
+                                            members.map(member => {
+                                                member.user_id === auth.user.id &&
+                                                <th>Actions</th>
+                                            })
+                                           
+                                        } */}
+                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -158,18 +153,22 @@ export default function Index({ auth, members, search, sortField, sortDirection 
                                             <td>$ {member.total.toFixed(2)}</td>
 
                                             {/* <td>{attendance.members}</td> */}
-                                            <td>
-                                                <Link
-                                                    href={route('members.edit', member.id)}
-                                                    className='font-medium text-red-600 dark:text-red-500 hover:underline mx-1' >
-                                                    Edit
-                                                </Link>
-                                                <button onClick={(e) => deleteItem(member)}
-                                                    className='font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1'>
-                                                    Delete
-                                                </button>
+                                            {
+                                                member.user_id === auth.user.id &&
+                                                <td>
+                                                    <Link
+                                                        href={route('members.edit', member.id)}
+                                                        className='font-medium text-red-600 dark:text-red-500 hover:underline mx-1' >
+                                                        Edit
+                                                    </Link>
+                                                    <button onClick={(e) => deleteItem(member)}
+                                                        className='font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1'>
+                                                        Delete
+                                                    </button>
 
-                                            </td>
+                                                </td>
+                                            }
+
                                         </tr>
 
                                     ))}

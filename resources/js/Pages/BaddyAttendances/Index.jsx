@@ -4,7 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import { Link, Head, router } from '@inertiajs/react';
 
 
-export default function Index({ auth, baddyAttendances}) {
+export default function Index({ auth, baddyAttendances }) {
 
     const containerStyle = {
         // position:'relative',
@@ -32,14 +32,14 @@ export default function Index({ auth, baddyAttendances}) {
 
     };
 
-    const deleteItem = (attendance) =>{
-        if (!window.confirm("Are you sure you want to delete?")){
+    const deleteItem = (attendance) => {
+        if (!window.confirm("Are you sure you want to delete?")) {
             return;
         }
         router.delete(route("baddy_attendances.destroy", attendance.id));
     }
 
-
+    const hasAction = baddyAttendances.some(baddyAttendance => baddyAttendance.user_id === auth.user.id);
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -56,16 +56,17 @@ export default function Index({ auth, baddyAttendances}) {
                         </Link>
                     </PrimaryButton>
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    
+
                         <div className="p-6 text-gray-900">
-                          
+
                             <table border="1" style={{ width: '100%', textAlign: 'center' }}>
                                 <thead>
                                     <tr>
-                                        <th style={{width: '15%'}}>Date</th>
-                                        <th style={{width: '15%'}}>Location</th>
-                                        <th style={{width: '50%'}}>Members</th>
-                                        <th style={{width: '20%'}}>Actions</th>
+                                        <th style={{ width: '15%' }}>Date</th>
+                                        <th style={{ width: '15%' }}>Location</th>
+                                        <th style={{ width: '50%' }}>Members</th>
+                                        { hasAction && <th style={{ width: '20%' }}>Actions</th> }
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -74,19 +75,23 @@ export default function Index({ auth, baddyAttendances}) {
                                             <td>{attendance.session_date}</td>
                                             <td>{attendance.session_location}</td>
                                             <td>
-                                            {attendance.members.map((member)=> member.name).join(", ")}
+                                                {attendance.members.map((member) => member.name).join(", ")}
                                             </td>
-                                            <td>
-                                                <Link href={route('baddy_attendances.edit', attendance.id)}
-                                                    className='font-medium text-red-600 dark:text-red-500 hover:underline mx-1' >
-                                                    Edit
-                                                </Link>
-                                                <button onClick={(e) => deleteItem(attendance)}
-                                                className='font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1'>
-                                                    Delete
-                                                </button>
-                                           
-                                            </td>
+                                            {
+                                                attendance.user_id === auth.user.id &&
+                                                <td>
+                                                    <Link href={route('baddy_attendances.edit', attendance.id)}
+                                                        className='font-medium text-red-600 dark:text-red-500 hover:underline mx-1' >
+                                                        Edit
+                                                    </Link>
+                                                    <button onClick={(e) => deleteItem(attendance)}
+                                                        className='font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1'>
+                                                        Delete
+                                                    </button>
+
+                                                </td>
+                                            }
+
                                         </tr>
 
                                     ))}
