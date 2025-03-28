@@ -27,10 +27,6 @@ class BaddyAttendanceController extends Controller
         $attendances = $query->paginate(10)->onEachSide(1);
         $baddyAttendances = BaddyAttendance::with('members')->get();
 
-        // return Inertia::render("BaddyAttendances/Index", [
-        //     "baddyAttendances" => BaddyAttendanceResource::collection($attendances),
-
-        // ]);
        
         return Inertia::render("BaddyAttendances/Index", [
             "baddyAttendances" => $baddyAttendances,
