@@ -17,14 +17,14 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'hilary',
-            'email' => 'hilarysoong@gmail.com',
-            'password' => bcrypt('admin123'),
-            'email_verified_at' => time(),
-        ]);
+        // User::factory()->create([
+        //     'name' => 'hilary',
+        //     'email' => 'hilarysoong@gmail.com',
+        //     'password' => bcrypt('admin123'),
+        //     'email_verified_at' => time(),
+        // ]);
 
-       $baddyAttendances= BaddyAttendance::factory(5)->create();
+       $baddyAttendances= BaddyAttendance::factory(20)->create();
 
         $members = Member::factory(10)->create();
 

@@ -39,7 +39,7 @@ export default function Index({ auth, baddyAttendances }) {
         router.delete(route("baddy_attendances.destroy", attendance.id));
     }
 
-    const hasAction = baddyAttendances.some(baddyAttendance => baddyAttendance.user_id === auth.user.id);
+    const hasAction = baddyAttendances.data.some(baddyAttendance => baddyAttendance.user_id === auth.user.id);
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -70,7 +70,7 @@ export default function Index({ auth, baddyAttendances }) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {baddyAttendances.map(attendance => (
+                                    {baddyAttendances.data.map(attendance => (
                                         <tr key={attendance.id}>
                                             <td>{attendance.session_date}</td>
                                             <td>{attendance.session_location}</td>
@@ -91,16 +91,30 @@ export default function Index({ auth, baddyAttendances }) {
 
                                                 </td>
                                             }
-
                                         </tr>
-
                                     ))}
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                    <div className="flex items-center justify-center space-x-2 p-4">
+                        <button
+                            className={`px-2 py-1 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 transition duration-200`}
+                            onClick={()=> router.visit(baddyAttendances.prev_page_url)}
+                            disabled={!baddyAttendances.prev_page_url}>
+                            Previous
+                        </button>
+                        <span> Page {baddyAttendances.current_page} of {baddyAttendances.last_page} </span>
+                        <button
+                         className={`px-2 py-1 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 transition duration-200`}
+                         onClick={()=>router.visit(baddyAttendances.next_page_url)}
+                         disabled={!baddyAttendances.next_page_url}>
+                            Next
+                        </button>
+                    </div>
                 </div>
             </div>
+
 
         </AuthenticatedLayout>
     );
