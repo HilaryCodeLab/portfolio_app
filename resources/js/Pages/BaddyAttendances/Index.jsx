@@ -100,14 +100,16 @@ export default function Index({ auth, baddyAttendances }) {
                     <div className="flex items-center justify-center space-x-2 p-4">
                         <button
                             className={`px-2 py-1 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 transition duration-200`}
-                            onClick={()=> router.visit(baddyAttendances.prev_page_url)}
+                            // onClick={()=> router.visit(baddyAttendances.prev_page_url)}
+                            onClick={()=> router.visit(baddyAttendances.prev_page_url.replace('http','https'))}
                             disabled={!baddyAttendances.prev_page_url}>
                             Previous
                         </button>
                         <span> Page {baddyAttendances.current_page} of {baddyAttendances.last_page} </span>
                         <button
                          className={`px-2 py-1 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 transition duration-200`}
-                         onClick={()=>router.visit(baddyAttendances.next_page_url)}
+                        //  onClick={()=>router.visit(baddyAttendances.next_page_url)}
+                         onClick={()=>router.visit(baddyAttendances.next_page_url.replace('http','https'))}
                          disabled={!baddyAttendances.next_page_url}>
                             Next
                         </button>
