@@ -11,7 +11,7 @@ export default defineConfig({
         react(),
     ],
     server: {
-        https: true,
+        // https: true,
         hmr: {
             host: '127.0.0.1',
         },
