@@ -5,6 +5,7 @@ import { Link, Head, router } from '@inertiajs/react';
 import TextInput from "@/Components/TextInput";
 import { Inertia } from '@inertiajs/inertia';
 import _ from "lodash";
+import {Scrollbar} from 'react-scrollbars-custom';
 
 export default function Index({ auth, members, search, sortField, sortDirection }) {
 
@@ -120,10 +121,10 @@ export default function Index({ auth, members, search, sortField, sortDirection 
 
                         </div>
                     </div>
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg" style={{ height:'500px'}}>
 
-                        <div className="p-6 text-gray-900">
-
+                        <div className="p-6 text-gray-900" style={{ height:'500px', overflowY: 'auto'}} >
+                            <Scrollbar style={{width:'100%', height:'500px', maxHeight:'500px', overflowY: 'auto'}}>
                             <table border="1" style={{ width: '100%', textAlign: 'center' }}>
                                 <thead>
                                     <tr>
@@ -174,6 +175,9 @@ export default function Index({ auth, members, search, sortField, sortDirection 
                                     ))}
                                 </tbody>
                             </table>
+                            </Scrollbar>
+
+                            
                         </div>
                     </div>
                 </div>
