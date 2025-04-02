@@ -5,7 +5,7 @@ import { Link, Head, router } from '@inertiajs/react';
 import TextInput from "@/Components/TextInput";
 import { Inertia } from '@inertiajs/inertia';
 import _ from "lodash";
-import {Scrollbar} from 'react-scrollbars-custom';
+import { Scrollbar } from 'react-scrollbars-custom';
 
 export default function Index({ auth, members, search, sortField, sortDirection }) {
 
@@ -121,63 +121,63 @@ export default function Index({ auth, members, search, sortField, sortDirection 
 
                         </div>
                     </div>
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg" style={{ height:'500px'}}>
+                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg" style={{ height: '500px' }}>
 
-                        <div className="p-6 text-gray-900" style={{ height:'500px', overflowY: 'auto'}} >
-                            <Scrollbar style={{width:'100%', height:'500px', maxHeight:'500px', overflowY: 'auto'}}>
-                            <table border="1" style={{ width: '100%', textAlign: 'center' }}>
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Gender</th>
-                                        <th>Total Attendance</th>
-                                        {/* <th>Add On</th> */}
-                                        <th>Amount Owed</th>
-                                        { hasActions &&  <th>Actions</th> }
-                                        {/* {
+                        <div className="p-6 text-gray-900" style={{ height: '500px', overflowY: 'auto' }} >
+                            <Scrollbar style={{ width: '100%', height: '500px', maxHeight: '500px', overflowY: 'auto' }}>
+                                <table border="1" style={{ width: '100%', textAlign: 'center' }}>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Gender</th>
+                                            <th>Total Attendance</th>
+                                            {/* <th>Add On</th> */}
+                                            <th>Amount Owed</th>
+                                            {hasActions && <th>Actions</th>}
+                                            {/* {
                                             members.map(member => {
                                                 member.user_id === auth.user.id &&
                                                 <th>Actions</th>
                                             })
                                            
                                         } */}
-                                        
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {members.map(member => (
-                                        <tr key={member.id}>
-                                            <td>{member.name}</td>
-                                            <td>{member.gender}</td>
-                                            <td>{member.baddy_attendances_count}</td>
-                                            {/* <td>$ {member.addOnAmount}</td> */}
-                                            <td>$ {member.total.toFixed(2)}</td>
-
-                                            {/* <td>{attendance.members}</td> */}
-                                            {
-                                                member.user_id === auth.user.id &&
-                                                <td>
-                                                    <Link
-                                                        href={route('members.edit', member.id)}
-                                                        className='font-medium text-red-600 dark:text-red-500 hover:underline mx-1' >
-                                                        Edit
-                                                    </Link>
-                                                    <button onClick={(e) => deleteItem(member)}
-                                                        className='font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1'>
-                                                        Delete
-                                                    </button>
-
-                                                </td>
-                                            }
 
                                         </tr>
+                                    </thead>
+                                    <tbody>
+                                        {members.map(member => (
+                                            <tr key={member.id}>
+                                                <td>{member.name}</td>
+                                                <td>{member.gender}</td>
+                                                <td>{member.baddy_attendances_count}</td>
+                                                {/* <td>$ {member.addOnAmount}</td> */}
+                                                <td>$ {member.total.toFixed(2)}</td>
 
-                                    ))}
-                                </tbody>
-                            </table>
+                                                {/* <td>{attendance.members}</td> */}
+                                                {
+                                                    member.user_id === auth.user.id &&
+                                                    <td>
+                                                        <Link
+                                                            href={route('members.edit', member.id)}
+                                                            className='font-medium text-red-600 dark:text-red-500 hover:underline mx-1' >
+                                                            Edit
+                                                        </Link>
+                                                        <button onClick={(e) => deleteItem(member)}
+                                                            className='font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1'>
+                                                            Delete
+                                                        </button>
+
+                                                    </td>
+                                                }
+
+                                            </tr>
+
+                                        ))}
+                                    </tbody>
+                                </table>
                             </Scrollbar>
 
-                            
+
                         </div>
                     </div>
                 </div>
