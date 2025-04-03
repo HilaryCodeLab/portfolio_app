@@ -41,7 +41,7 @@
             ],
             "environmentFiles": [
                 {
-                    "value": "arn:aws:s3:::ecs-deployment-secrets/.env",
+                    "value": "arn:aws:s3:::ecs-deployment-secrets/.env_2",
                     "type": "s3"
                 }
             ],
