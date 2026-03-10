@@ -2,7 +2,6 @@ FROM ubuntu:22.04
 
 LABEL maintainer="Taylor Otwell"
 
-ARG WWWGROUP=1000
 ARG XDEBUG
 ARG NODE_VERSION=20
 ARG MYSQL_CLIENT="mysql-client"
@@ -57,17 +56,18 @@ RUN apt-get update \
 
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.3
 
-RUN groupadd --force -g $WWWGROUP sail
-RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
+RUN groupadd --force sail \
+ && useradd -m -g sail sail
+
 
 COPY docker/8.3/start-container /usr/local/bin/start-container
 COPY docker/8.3/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker/8.3/php.ini /etc/php/8.3/cli/conf.d/99-sail.ini
 COPY --chmod=777 . /var/www/html
 
-RUN npm install \
-    && npm run build \
-    && composer install
+RUN npm install 
+RUN npm run build 
+RUN composer install
 
 RUN chmod +x /usr/local/bin/start-container
 

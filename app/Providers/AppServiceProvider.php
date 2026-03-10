@@ -12,7 +12,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-         $this->app['url']->forceScheme('https');
     }
 
     /**
@@ -21,6 +20,5 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         
-        URL::forceScheme('https');
     }
 }

@@ -8,14 +8,22 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\TennisPlayerController;
+
+Route::middleware(['auth'])
+    ->prefix('tennis')
+    ->name('tennis.')
+    ->group(function () {
+        Route::resource('players', TennisPlayerController::class);
+    });
+
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+	
+if (\App\Models\User::count() === 0) {
+        return redirect()->route('register');
+    }
+	return redirect()->route('login'); 
 });
 
 Route::get('/dashboard', function () {

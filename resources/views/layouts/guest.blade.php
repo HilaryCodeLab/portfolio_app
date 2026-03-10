@@ -4,16 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'My App')</title>
-    
-    <!-- Expose Laravel routes to JS -->
-    @routes	
-
-    <!-- Vite will load your React app bundle -->
-    @vite('resources/js/app.tsx')
-    @inertiaHead
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-<body class="font-sans antialiased">
-    @inertia
+<body class="bg-gray-100">
+    <main class="flex items-center justify-center min-h-screen">
+        @yield('content')
+    </main>
 </body>
 </html>
 

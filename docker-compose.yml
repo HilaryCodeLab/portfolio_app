@@ -1,8 +1,8 @@
 services:
     laravel.test:
         build:
-            context: ./docker/8.3
-            dockerfile: Dockerfile
+            context: .
+            dockerfile: docker/8.3/Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
         image: sail-8.3/app
@@ -28,7 +28,6 @@ services:
             - redis
             - meilisearch
             - mailpit
-            - selenium
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
@@ -92,14 +91,6 @@ services:
         ports:
             - '${FORWARD_MAILPIT_PORT:-1025}:1025'
             - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
-        networks:
-            - sail
-    selenium:
-        image: selenium/standalone-chrome
-        extra_hosts:
-            - 'host.docker.internal:host-gateway'
-        volumes:
-            - '/dev/shm:/dev/shm'
         networks:
             - sail
 networks:
