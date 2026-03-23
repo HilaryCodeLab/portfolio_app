@@ -86,21 +86,18 @@ export default function Index({ auth, members, search, sortField, sortDirection 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="flex flex-col md:flex-row md:justify-between mb-4 space-y-2 md:space-y-0 md:space-x-4">
-                        <PrimaryButton style={buttonStyle} className="flex items-center justify-center md:justify-start w-full md:w-auto">
-                            <Link
-                                href={route('members.create')}
-                                className="flex items-center justify-center"
-                            >
-                                <span className="mr-2">Create</span>
-                                <span className="hidden md:inline"> Member</span>
-                            </Link>
-                        </PrimaryButton>
-
+                        <Link
+                            href={route('members.create')}
+                            className="inline-flex items-center px-4 py-2 mb-6 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700"
+                        >
+                            <span className="mr-2">Create</span>
+                            <span className="hidden md:inline"> Member</span>
+                        </Link>
                         <TextInput
                             type="text"
                             value={searchQuery}
                             onChange={handleSearchChange}
-                            placeholder="search name or gender here"
+                            placeholder="search name or gender"
                             style={buttonStyle}
                             className="border px-4 py-2 rounded w-full md:w-auto"
                         />

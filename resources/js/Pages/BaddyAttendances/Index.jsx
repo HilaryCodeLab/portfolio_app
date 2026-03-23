@@ -47,14 +47,13 @@ export default function Index({ auth, baddyAttendances }) {
             <Head title="baddy attendances" />
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <PrimaryButton style={buttonStyle}>
-                        <Link
-                            href={route('baddy_attendances.create')}
-                        >
-                            <span>Create</span>
-                            <span className="hidden md:inline"> Attendance</span>
-                        </Link>
-                    </PrimaryButton>
+                    <Link
+                        className="inline-flex items-center px-4 py-2 mb-6 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700"
+                        href={route('baddy_attendances.create')}
+                    >
+                        <span className="mr-2">Create</span>
+                        <span className="hidden md:inline"> Attendance</span>
+                    </Link>
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
 
                         <div className="p-6 text-gray-900">
@@ -71,30 +70,30 @@ export default function Index({ auth, baddyAttendances }) {
                                 </thead>
                                 <tbody>
                                     {baddyAttendances.data.map(attendance => {
-                                        const hasMembers = attendance.members.some(member=>member.name);
+                                        const hasMembers = attendance.members.some(member => member.name);
                                         if (!hasMembers) return null;
-                                        return(
+                                        return (
                                             <tr key={attendance.id}>
-                                            <td>{attendance.session_date}</td>
-                                            <td>{attendance.session_location}</td>
-                                            <td>
-                                                {attendance.members.map((member) => member.name).join(", ")}
-                                            </td>
-                                            {
-                                                attendance.user_id === auth.user.id &&
+                                                <td>{attendance.session_date}</td>
+                                                <td>{attendance.session_location}</td>
                                                 <td>
-                                                    <Link href={route('baddy_attendances.edit', attendance.id)}
-                                                        className='font-medium text-red-600 dark:text-red-500 hover:underline mx-1' >
-                                                        Edit
-                                                    </Link>
-                                                    <button onClick={(e) => deleteItem(attendance)}
-                                                        className='font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1'>
-                                                        Delete
-                                                    </button>
-
+                                                    {attendance.members.map((member) => member.name).join(", ")}
                                                 </td>
-                                            }
-                                        </tr>
+                                                {
+                                                    attendance.user_id === auth.user.id &&
+                                                    <td>
+                                                        <Link href={route('baddy_attendances.edit', attendance.id)}
+                                                            className='font-medium text-red-600 dark:text-red-500 hover:underline mx-1' >
+                                                            Edit
+                                                        </Link>
+                                                        <button onClick={(e) => deleteItem(attendance)}
+                                                            className='font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1'>
+                                                            Delete
+                                                        </button>
+
+                                                    </td>
+                                                }
+                                            </tr>
                                         );
                                     })}
                                 </tbody>
@@ -105,7 +104,7 @@ export default function Index({ auth, baddyAttendances }) {
                         <button
                             className={`px-2 py-1 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 transition duration-200`}
                             // onClick={() => router.visit(baddyAttendances.prev_page_url)}
-                            onClick={()=> router.visit(baddyAttendances.prev_page_url.replace('http','https'))}
+                            onClick={() => router.visit(baddyAttendances.prev_page_url.replace('http', 'https'))}
                             disabled={!baddyAttendances.prev_page_url}>
                             Previous
                         </button>
@@ -113,7 +112,7 @@ export default function Index({ auth, baddyAttendances }) {
                         <button
                             className={`px-2 py-1 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 transition duration-200`}
                             // onClick={() => router.visit(baddyAttendances.next_page_url)}
-                            onClick={()=>router.visit(baddyAttendances.next_page_url.replace('http','https'))}
+                            onClick={() => router.visit(baddyAttendances.next_page_url.replace('http', 'https'))}
                             disabled={!baddyAttendances.next_page_url}>
                             Next
                         </button>

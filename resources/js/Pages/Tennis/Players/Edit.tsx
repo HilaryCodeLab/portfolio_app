@@ -2,35 +2,38 @@ import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { useForm, Head, Link } from '@inertiajs/react';
 import type { PageProps } from '@/types/app';
-import type { PlayerStatus } from '@/types/tennis';
+import type { Player, PlayerStatus } from '@/types/tennis';
 import { route } from 'ziggy-js';
 
-interface Props extends PageProps {}
+interface Props extends PageProps {
+    player: Player;
+}
 
-export default function Create({ auth }: Props) {
-    const { data, setData, post, processing, errors } = useForm({
-        name: '',
-        rating: '0.00',
-        status: 'provisional' as PlayerStatus,
+export default function Edit({ auth, player }: Props) {
+    const { data, setData, post, errors, processing } = useForm({
+        name: player.name,
+        rating: player.rating.toFixed(2),
+        status: player.status as PlayerStatus,
+        _method: 'PUT',
     });
 
-    function submit(e: React.FormEvent) {
+    const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('tennis.players.store'));
-    }
+        post(route('tennis.players.update', player.id));
+    };
 
     return (
         <AuthenticatedLayout
             user={auth.user}
             header={
                 <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                    Create Player
+                    Edit Player - id: {player.id}
                 </h2>
             }
         >
-            <Head title="Create Player" />
+            <Head title="Edit Player" />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -94,6 +97,28 @@ export default function Create({ auth }: Props) {
                                 <InputError message={errors.status} className="mt-2" />
                             </div>
 
+                            <div className="mb-5">
+                                <label className="block mb-2 text-sm font-medium text-gray-900">
+                                    Last Played Date:
+                                </label>
+                                <p className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+                                    {player.last_played_date ? player.last_played_date.slice(0, 10) : '—'}
+                                </p>
+                            </div>
+
+
+                            <div className="mb-5">
+                                <label className="block mb-2 text-sm font-medium text-gray-900">
+                                    Wins: {player.wins}
+                                </label>
+                                <label className="block mb-2 text-sm font-medium text-gray-900">
+                                    Losses: {player.losses}
+                                </label>
+                                <label className="block mb-2 text-sm font-medium text-gray-900">
+                                    Matches Played: {player.matches_played}
+                                </label>
+                            </div>
+
                             <div className="flex justify-end items-center space-x-4 mt-6">
                                 <Link
                                     href={route('tennis.players.index')}
@@ -105,7 +130,7 @@ export default function Create({ auth }: Props) {
                                     className="bg-black text-white py-2 px-4 rounded-md shadow hover:bg-gray-800 transition-all"
                                     disabled={processing}
                                 >
-                                    {processing ? 'Creating...' : 'Create'}
+                                    {processing ? 'Updating...' : 'Update'}
                                 </PrimaryButton>
                             </div>
                         </form>

@@ -39,7 +39,7 @@ export default function AuthenticatedLayout({
                                 </Link>
                             </div>
 
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <div className="hidden sm:ms-10 sm:flex sm:items-center sm:gap-6">
                                 <NavLink
                                     href={route('dashboard')}
                                     active={route().current('dashboard')}
@@ -68,9 +68,34 @@ export default function AuthenticatedLayout({
                                     Baddy Attendances
                                 </NavLink>
 
-                                <NavLink href={route('tennis.players.index')}>
-                                    Tennis Players
+                                <div className="relative">
+                                    <Dropdown>
+                                        <Dropdown.Trigger>
+                                            <button
+                                                type="button"
+                                                className="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium leading-5 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                            >
+                                                Tennis Players
+                                            </button>
+                                        </Dropdown.Trigger>
+                                        <Dropdown.Content>
+                                            <Dropdown.Link href={route('tennis.players.index')}>
+                                                List
+                                            </Dropdown.Link>
+                                            <Dropdown.Link href={route('tennis.players.statistics')}>
+                                                Statistics
+                                            </Dropdown.Link>
+                                        </Dropdown.Content>
+                                    </Dropdown>
+                                </div>
+
+                                <NavLink
+                                    href={route('tennis.matches.index')}
+                                    active={route().current('tennis.matches.index')}
+                                >
+                                    Tennis Matches
                                 </NavLink>
+
 
                             </div>
                         </div>
@@ -197,6 +222,21 @@ export default function AuthenticatedLayout({
                         >
                             Chirps
                         </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            href={route('tennis.players.index')}
+                            active={route().current('tennis.players.index')}
+                        >
+                            Tennis Players List
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            href={route('tennis.players.statistics')}
+                            active={route().current('tennis.players.statistics')}
+                        >
+                            Tennis Player Statistics
+                        </ResponsiveNavLink>
+
                     </div>
 
                     <div className="pt-4 pb-1 border-t border-gray-200">

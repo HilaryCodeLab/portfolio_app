@@ -1,0 +1,228 @@
+import React from 'react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import InputError from '@/Components/InputError';
+import PrimaryButton from '@/Components/PrimaryButton';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { route } from 'ziggy-js';
+import type { PageProps } from '@/types/app';
+
+interface PlayerOption {
+    id: number;
+    name: string;
+}
+
+interface MatchPlayer {
+    id: number;
+    name: string;
+    pivot: {
+        team: number;
+    };
+}
+
+interface TennisMatch {
+    id: number;
+    date_played: string | null;
+    match_type: 'singles' | 'doubles';
+    score: string | null;
+    winning_team: number;
+    players: MatchPlayer[];
+}
+
+interface MatchPlayerInput {
+    id: string;
+    team: '1' | '2';
+}
+
+interface Props extends PageProps {
+    match: TennisMatch;
+    players: PlayerOption[];
+}
+
+export default function Edit({ auth, match, players }: Props) {
+    const { data, setData, post, processing, errors } = useForm({
+        date_played: match.date_played ? match.date_played.slice(0, 10) : '',
+        match_type: match.match_type,
+        score: match.score ?? '',
+        winning_team: String(match.winning_team),
+        players: match.players.map((player) => ({
+            id: String(player.id),
+            team: String(player.pivot.team) as '1' | '2',
+        })) as MatchPlayerInput[],
+        _method: 'PUT',
+    });
+
+    function handleMatchTypeChange(value: 'singles' | 'doubles') {
+        const defaultPlayers =
+            value === 'singles'
+                ? [
+                      { id: '', team: '1' as const },
+                      { id: '', team: '2' as const },
+                  ]
+                : [
+                      { id: '', team: '1' as const },
+                      { id: '', team: '1' as const },
+                      { id: '', team: '2' as const },
+                      { id: '', team: '2' as const },
+                  ];
+
+        setData('match_type', value);
+        setData('players', defaultPlayers);
+    }
+
+    function updatePlayer(index: number, field: 'id' | 'team', value: string) {
+        const updatedPlayers = [...data.players];
+        updatedPlayers[index] = {
+            ...updatedPlayers[index],
+            [field]: value,
+        };
+        setData('players', updatedPlayers);
+    }
+
+    function submit(e: React.FormEvent) {
+        e.preventDefault();
+        post(route('tennis.matches.update', match.id));
+    }
+
+    return (
+        <AuthenticatedLayout
+            user={auth.user}
+            header={
+                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                    Edit Match - id: {match.id}
+                </h2>
+            }
+        >
+            <Head title="Edit Match" />
+
+            <div className="py-12">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div className="bg-white shadow sm:rounded-lg p-6">
+                        <form className="max-w-md mx-auto" onSubmit={submit}>
+                            <div className="mb-5">
+                                <label
+                                    htmlFor="date_played"
+                                    className="block mb-2 text-sm font-medium text-gray-900"
+                                >
+                                    Date Played:
+                                </label>
+                                <input
+                                    id="date_played"
+                                    type="date"
+                                    value={data.date_played}
+                                    onChange={(e) => setData('date_played', e.target.value)}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                />
+                                <InputError message={errors.date_played} className="mt-2" />
+                            </div>
+
+                            <div className="mb-5">
+                                <label
+                                    htmlFor="match_type"
+                                    className="block mb-2 text-sm font-medium text-gray-900"
+                                >
+                                    Match Type:
+                                </label>
+                                <select
+                                    id="match_type"
+                                    value={data.match_type}
+                                    onChange={(e) =>
+                                        handleMatchTypeChange(
+                                            e.target.value as 'singles' | 'doubles'
+                                        )
+                                    }
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                >
+                                    <option value="singles">Singles</option>
+                                    <option value="doubles">Doubles</option>
+                                </select>
+                                <InputError message={errors.match_type} className="mt-2" />
+                            </div>
+
+                            <div className="mb-5">
+                                <label
+                                    htmlFor="score"
+                                    className="block mb-2 text-sm font-medium text-gray-900"
+                                >
+                                    Score:
+                                </label>
+                                <input
+                                    id="score"
+                                    type="text"
+                                    placeholder="e.g. 6-4, 7-5"
+                                    value={data.score}
+                                    onChange={(e) => setData('score', e.target.value)}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                />
+                                <InputError message={errors.score} className="mt-2" />
+                            </div>
+
+                            {data.players.map((player, index) => (
+                                <div key={index} className="mb-5 border rounded-lg p-4">
+                                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                                        Player {index + 1}
+                                    </label>
+
+                                    <select
+                                        value={player.id}
+                                        onChange={(e) => updatePlayer(index, 'id', e.target.value)}
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 mb-3"
+                                    >
+                                        <option value="">Select Player</option>
+                                        {players.map((option) => (
+                                            <option key={option.id} value={option.id}>
+                                                {option.name}
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                    <select
+                                        value={player.team}
+                                        onChange={(e) => updatePlayer(index, 'team', e.target.value)}
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                    >
+                                        <option value="1">Team 1</option>
+                                        <option value="2">Team 2</option>
+                                    </select>
+                                </div>
+                            ))}
+
+                            <InputError message={errors.players} className="mt-2" />
+
+                            <div className="mb-5">
+                                <label
+                                    htmlFor="winning_team"
+                                    className="block mb-2 text-sm font-medium text-gray-900"
+                                >
+                                    Winning Team:
+                                </label>
+                                <select
+                                    id="winning_team"
+                                    value={data.winning_team}
+                                    onChange={(e) => setData('winning_team', e.target.value)}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                >
+                                    <option value="1">Team 1</option>
+                                    <option value="2">Team 2</option>
+                                </select>
+                                <InputError message={errors.winning_team} className="mt-2" />
+                            </div>
+
+                            <div className="flex justify-end items-center space-x-4 mt-6">
+                                <Link
+                                    href={route('tennis.matches.index')}
+                                    className="text-sm text-gray-600 hover:text-gray-900 py-2 px-4 border border-gray-300 rounded-md"
+                                >
+                                    Cancel
+                                </Link>
+
+                                <PrimaryButton disabled={processing}>
+                                    {processing ? 'Updating...' : 'Update'}
+                                </PrimaryButton>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </AuthenticatedLayout>
+    );
+}

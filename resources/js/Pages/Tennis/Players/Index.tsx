@@ -1,68 +1,125 @@
-import AuthenticatedLayout from '../../../Layouts/AuthenticatedLayout';
-
-import { Head, Link } from '@inertiajs/react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import PrimaryButton from '@/Components/PrimaryButton';
+import { Head, Link, router } from '@inertiajs/react';
+import { route } from 'ziggy-js';
 
 import type { Player } from '@/types/tennis';
 import type { PageProps } from '@/types/app';
 import { STATUS_LABELS } from '@/types/tennis';
-import {route} from 'ziggy-js';
+import { formatDate } from '@/utils/date';
+
 
 interface Props extends PageProps {
     players: Player[];
 }
 
+function deletePlayer(playerId: number) {
+    if (!window.confirm('Are you sure you want to delete this player?')) {
+        return;
+    }
+
+    router.delete(route('tennis.players.destroy', playerId));
+}
+
+
 export default function PlayersIndex({ auth, players }: Props) {
     return (
-        <AuthenticatedLayout user={auth.user}>
-            <Head title="Tennis Players" />
-            <Link
-                href={route('tennis.players.create')}
-                className="bg-green-600 text-white px-4 py-2 rounded"
-            >
-                Add Player
-            </Link>
-
-            <div className="p-6">
-                <h1 className="text-2xl font-bold mb-4">
+        <AuthenticatedLayout
+            user={auth.user}
+            header={
+                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
                     Tennis Players
-                </h1>
+                </h2>
+            }
+        >
+            <Head title="Tennis Players" />
 
-                <table className="min-w-full border">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Rating</th>
-                            <th>Status</th>
-                            <th>Last Played</th>
-                        </tr>
-                    </thead>
+            <div className="py-12">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <Link
+                        href={route('tennis.players.create')}
+                        className="inline-flex items-center px-4 py-2 mb-6 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700"
+                    >
+                        Add Player
+                    </Link>
+                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div className="p-6 text-gray-900">
+                            <table className="w-full text-center border border-gray-300">
+                                <thead className="bg-gray-100">
+                                    <tr>
+                                        <th className="px-4 py-3 border border-gray-300">Name</th>
+                                        <th className="px-4 py-3 border border-gray-300">Rating</th>
+                                        <th className="px-4 py-3 border border-gray-300">Wins</th>
+                                        <th className="px-4 py-3 border border-gray-300">Losses</th>
+                                        <th className="px-4 py-3 border border-gray-300">Status</th>
+                                        <th className="px-4 py-3 border border-gray-300">Last Played</th>
+                                        <th className="px-4 py-3 border border-gray-300">Actions</th>
+                                    </tr>
+                                </thead>
 
-                    <tbody>
-                        {players.map((player) => (
-                            <tr key={player.id}>
-                                <td>{player.name}</td>
+                                <tbody>
+                                    {players.map((player) => (
+                                        <tr key={player.id} className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 border border-gray-300">
+                                                {player.name}
+                                            </td>
 
-                                <td>
-                                    {player.rating.toFixed(2)}
-                                </td>
+                                            <td className="px-4 py-3 border border-gray-300">
+                                                {player.rating.toFixed(2)}
+                                            </td>
 
-                                <td>
-                                    {STATUS_LABELS[player.status]}
-                                </td>
+                                            <td className="px-4 py-3 border border-gray-300">
+                                                {player.wins}
+                                            </td>
 
-                                <td>
-                                    {player.last_played_date ?? '—'}
+                                            <td className="px-4 py-3 border border-gray-300">
+                                                {player.losses}
+                                            </td>
 
-                                    {player.last_played_date_overridden && (
-                                        <span className="ml-2 text-xs text-yellow-600">
-                                            manual
-                                        </span>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                            <td className="px-4 py-3 border border-gray-300">
+                                                {STATUS_LABELS[player.status]}
+                                            </td>
+
+                                            <td className="px-4 py-3 border border-gray-300">
+                                                {formatDate(player.last_played_date)}
+                                                {player.last_played_date_overridden && (
+                                                    <span className="ml-2 text-xs font-medium text-yellow-600">
+                                                        manual
+                                                    </span>
+                                                )}
+                                            </td>
+
+                                            <td className="px-4 py-3 border border-gray-300">
+                                                <div className="flex items-center justify-center gap-4">
+                                                    <Link
+                                                        href={route('tennis.players.edit', player.id)}
+                                                        className="font-medium text-blue-600 hover:underline"
+                                                    >
+                                                        Edit
+                                                    </Link>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => deletePlayer(player.id)}
+                                                        className="font-medium text-red-600 hover:underline"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+
+                            </table>
+
+                            {players.length === 0 && (
+                                <p className="mt-4 text-center text-gray-500">
+                                    No players found.
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
         </AuthenticatedLayout>
     );

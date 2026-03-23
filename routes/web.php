@@ -9,21 +9,26 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\TennisPlayerController;
+use App\Http\Controllers\TennisMatchController;
+
 
 Route::middleware(['auth'])
     ->prefix('tennis')
     ->name('tennis.')
     ->group(function () {
         Route::resource('players', TennisPlayerController::class);
+        Route::resource('matches', TennisMatchController::class);
+        Route::get('/player-statistics', [TennisPlayerController::class, 'statistics'])
+        ->name('players.statistics');
     });
 
 
 Route::get('/', function () {
-	
-if (\App\Models\User::count() === 0) {
+
+    if (\App\Models\User::count() === 0) {
         return redirect()->route('register');
     }
-	return redirect()->route('login'); 
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -44,20 +49,22 @@ Route::resource('chirps', ChirpController::class)
 
 Route::resource('attendances', AttendanceController::class)
 
-    ->only(['index','store','update','destroy'])
-    
-    ->middleware(['auth','verified']);
+    ->only(['index', 'store', 'update', 'destroy'])
+
+    ->middleware(['auth', 'verified']);
 
 Route::resource('baddy_attendances', BaddyAttendanceController::class)
 
-    ->only(['index', 'create', 'store', 'update', 'edit','destroy'])
+    ->only(['index', 'create', 'store', 'update', 'edit', 'destroy'])
 
     ->middleware(['auth', 'verified']);
 
 Route::resource('members', MemberController::class)
 
-    ->only(['index', 'create', 'store', 'update', 'edit','destroy'])
+    ->only(['index', 'create', 'store', 'update', 'edit', 'destroy'])
 
     ->middleware(['auth', 'verified']);
 
-require __DIR__.'/auth.php';
+
+
+require __DIR__ . '/auth.php';
