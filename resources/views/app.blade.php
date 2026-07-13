@@ -9,6 +9,7 @@
     @routes	
 
     <!-- Vite will load your React app bundle -->
+    @viteReactRefresh
     @vite('resources/js/app.tsx')
     @inertiaHead
 </head>

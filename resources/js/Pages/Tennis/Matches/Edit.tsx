@@ -22,6 +22,7 @@ interface MatchPlayer {
 interface TennisMatch {
     id: number;
     date_played: string | null;
+    location: string | null;
     match_type: 'singles' | 'doubles';
     score: string | null;
     winning_team: number;
@@ -41,6 +42,7 @@ interface Props extends PageProps {
 export default function Edit({ auth, match, players }: Props) {
     const { data, setData, post, processing, errors } = useForm({
         date_played: match.date_played ? match.date_played.slice(0, 10) : '',
+        location: match.location ?? '',
         match_type: match.match_type,
         score: match.score ?? '',
         winning_team: String(match.winning_team),
@@ -113,6 +115,24 @@ export default function Edit({ auth, match, players }: Props) {
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                                 />
                                 <InputError message={errors.date_played} className="mt-2" />
+                            </div>
+
+                            <div className="mb-5">
+                                <label
+                                    htmlFor="location"
+                                    className="block mb-2 text-sm font-medium text-gray-900"
+                                >
+                                    Location:
+                                </label>
+                                <input
+                                    id="location"
+                                    type="text"
+                                    placeholder="e.g. Central Park Courts"
+                                    value={data.location}
+                                    onChange={(e) => setData('location', e.target.value)}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                />
+                                <InputError message={errors.location} className="mt-2" />
                             </div>
 
                             <div className="mb-5">

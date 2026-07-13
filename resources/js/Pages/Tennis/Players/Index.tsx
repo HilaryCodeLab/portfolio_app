@@ -1,16 +1,22 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import PrimaryButton from '@/Components/PrimaryButton';
 import { Head, Link, router } from '@inertiajs/react';
 import { route } from 'ziggy-js';
 
-import type { Player } from '@/types/tennis';
 import type { PageProps } from '@/types/app';
+import type { Player } from '@/types/tennis';
 import { STATUS_LABELS } from '@/types/tennis';
 import { formatDate } from '@/utils/date';
 
+interface PaginatedPlayers {
+    data: Player[];
+    current_page: number;
+    last_page: number;
+    prev_page_url: string | null;
+    next_page_url: string | null;
+}
 
 interface Props extends PageProps {
-    players: Player[];
+    players: PaginatedPlayers;
 }
 
 function deletePlayer(playerId: number) {
@@ -20,7 +26,6 @@ function deletePlayer(playerId: number) {
 
     router.delete(route('tennis.players.destroy', playerId));
 }
-
 
 export default function PlayersIndex({ auth, players }: Props) {
     return (
@@ -42,6 +47,7 @@ export default function PlayersIndex({ auth, players }: Props) {
                     >
                         Add Player
                     </Link>
+
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
                             <table className="w-full text-center border border-gray-300">
@@ -58,7 +64,7 @@ export default function PlayersIndex({ auth, players }: Props) {
                                 </thead>
 
                                 <tbody>
-                                    {players.map((player) => (
+                                    {players.data.map((player) => (
                                         <tr key={player.id} className="hover:bg-gray-50">
                                             <td className="px-4 py-3 border border-gray-300">
                                                 {player.name}
@@ -109,14 +115,41 @@ export default function PlayersIndex({ auth, players }: Props) {
                                         </tr>
                                     ))}
                                 </tbody>
-
                             </table>
 
-                            {players.length === 0 && (
+                            {players.data.length === 0 && (
                                 <p className="mt-4 text-center text-gray-500">
                                     No players found.
                                 </p>
                             )}
+
+                            <div className="flex items-center justify-center space-x-2 p-4">
+                                <button
+                                    className="px-3 py-1 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 transition duration-200"
+                                    onClick={() =>
+                                        players.prev_page_url &&
+                                        router.visit(players.prev_page_url)
+                                    }
+                                    disabled={!players.prev_page_url}
+                                >
+                                    Previous
+                                </button>
+
+                                <span>
+                                    Page {players.current_page} of {players.last_page}
+                                </span>
+
+                                <button
+                                    className="px-3 py-1 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 transition duration-200"
+                                    onClick={() =>
+                                        players.next_page_url &&
+                                        router.visit(players.next_page_url)
+                                    }
+                                    disabled={!players.next_page_url}
+                                >
+                                    Next
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

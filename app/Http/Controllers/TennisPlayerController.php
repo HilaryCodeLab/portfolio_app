@@ -78,6 +78,16 @@ class TennisPlayerController extends Controller
             ];
         })->values();
 
+        // Build pie-chart data: count players by status.
+        $statusCounts = [
+            'labels' => ['Provisional', 'Ranked', 'Inactive'],
+            'series' => [
+                $players->where('status', 'provisional')->count(),
+                $players->where('status', 'ranked')->count(),
+                $players->where('status', 'inactive')->count(),
+            ],
+        ];
+
         return Inertia::render('Tennis/Players/Statistics', [
             // Data for the line chart: wins by match date.
             'playerWinsChart' => [
@@ -87,16 +97,20 @@ class TennisPlayerController extends Controller
 
             // Data for the bar chart: total wins/losses by player.
             'players' => $playerStats,
+            'statusCounts' => $statusCounts,
         ]);
     }
 
     public function index()
     {
-        $players = TennisPlayer::with('matches')->get()->map(function ($player) {
+        $paginatedPlayers = TennisPlayer::with('matches')
+            ->orderBy('name')
+            ->paginate(10);
+
+        $paginatedPlayers->through(function ($player) {
             $wins = 0;
             $losses = 0;
 
-            // Derive wins and losses from recorded matches instead of stored counters.
             foreach ($player->matches as $match) {
                 $isWinner = (int) $match->pivot->team === (int) $match->winning_team;
 
@@ -107,7 +121,6 @@ class TennisPlayerController extends Controller
                 }
             }
 
-            // The latest related match determines the last played date.
             $latestMatch = $player->matches
                 ->sortByDesc('date_played')
                 ->first();
@@ -120,15 +133,16 @@ class TennisPlayerController extends Controller
                 'wins' => $wins,
                 'losses' => $losses,
                 'matches_played' => $player->matches->count(),
-                'last_played_date' => $latestMatch?->date_played?->format('Y-m-d'),
+                'last_played_date' => $latestMatch?->date_played?->toDateString(),
                 'last_played_date_overridden' => $player->last_played_date_overridden,
             ];
         });
 
         return Inertia::render('Tennis/Players/Index', [
-            'players' => $players,
+            'players' => $paginatedPlayers,
         ]);
     }
+
 
 
     public function create()

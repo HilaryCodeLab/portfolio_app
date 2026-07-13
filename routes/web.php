@@ -20,6 +20,8 @@ Route::middleware(['auth'])
         Route::resource('matches', TennisMatchController::class);
         Route::get('/player-statistics', [TennisPlayerController::class, 'statistics'])
         ->name('players.statistics');
+        Route::get('/matches-scoring', [TennisMatchController::class, 'scoring'])
+        ->name('matches.scoring');
     });
 
 

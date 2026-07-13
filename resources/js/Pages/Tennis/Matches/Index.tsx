@@ -16,29 +16,40 @@ interface TennisMatch {
     id: number;
     date_played: string;
     match_type: string;
-    score: string;
+    score: string | null;
     winning_team: number;
     players: MatchPlayer[];
 }
 
+interface PaginatedMatches {
+    data: TennisMatch[];
+    current_page: number;
+    last_page: number;
+    prev_page_url: string | null;
+    next_page_url: string | null;
+}
+
 interface Props extends PageProps {
-    matches: TennisMatch[];
+    matches: PaginatedMatches;
 }
-
-function deleteMatch(matchId: number) {
-    if (!window.confirm('Are you sure you want to delete this match?')) {
-        return;
-    }
-
-    router.delete(route('tennis.matches.destroy', matchId));
-}
-
 
 export default function Index({ auth, matches }: Props) {
+    function deleteMatch(matchId: number) {
+        if (!window.confirm('Are you sure you want to delete this match?')) {
+            return;
+        }
+
+        router.delete(route('tennis.matches.destroy', matchId));
+    }
+
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Matches</h2>}
+            header={
+                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                    Matches
+                </h2>
+            }
         >
             <Head title="Matches" />
 
@@ -65,17 +76,30 @@ export default function Index({ auth, matches }: Props) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {matches.map((match) => (
+                                    {matches.data.map((match) => (
                                         <tr key={match.id}>
-                                            <td className="px-4 py-3 border">{formatDate(match.date_played)}</td>
-                                            <td className="px-4 py-3 border">{match.match_type}</td>
-                                            <td className="px-4 py-3 border">{match.score}</td>
                                             <td className="px-4 py-3 border">
-                                                {match.players.map((player) => `${player.name} (Team ${player.pivot.team})`).join(', ')}
+                                                {formatDate(match.date_played)}
                                             </td>
-                                            <td className="px-4 py-3 border">Team {match.winning_team}</td>
-                                            <td className="px-4 py-3 border border-gray-300">
-                                                <div className="flex items-center justify-center gap-4">
+                                            <td className="px-4 py-3 border">
+                                                {match.match_type}
+                                            </td>
+                                            <td className="px-4 py-3 border">
+                                                {match.score ?? '—'}
+                                            </td>
+                                            <td className="px-4 py-3 border">
+                                                {match.players
+                                                    .map(
+                                                        (player) =>
+                                                            `${player.name} (Team ${player.pivot.team})`
+                                                    )
+                                                    .join(', ')}
+                                            </td>
+                                            <td className="px-4 py-3 border">
+                                                Team {match.winning_team}
+                                            </td>
+                                            <td className="px-4 py-3 border">
+                                                <div className="flex items-center justify-center gap-3">
                                                     <Link
                                                         href={route('tennis.matches.edit', match.id)}
                                                         className="font-medium text-blue-600 hover:underline"
@@ -84,8 +108,8 @@ export default function Index({ auth, matches }: Props) {
                                                     </Link>
                                                     <button
                                                         type="button"
-                                                        className="font-medium text-red-600 hover:underline"
                                                         onClick={() => deleteMatch(match.id)}
+                                                        className="font-medium text-red-600 hover:underline"
                                                     >
                                                         Delete
                                                     </button>
@@ -95,6 +119,28 @@ export default function Index({ auth, matches }: Props) {
                                     ))}
                                 </tbody>
                             </table>
+
+                            <div className="flex items-center justify-center space-x-2 p-4">
+                                <button
+                                    className="px-3 py-1 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 transition duration-200"
+                                    onClick={() => matches.prev_page_url && router.visit(matches.prev_page_url)}
+                                    disabled={!matches.prev_page_url}
+                                >
+                                    Previous
+                                </button>
+
+                                <span>
+                                    Page {matches.current_page} of {matches.last_page}
+                                </span>
+
+                                <button
+                                    className="px-3 py-1 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 transition duration-200"
+                                    onClick={() => matches.next_page_url && router.visit(matches.next_page_url)}
+                                    disabled={!matches.next_page_url}
+                                >
+                                    Next
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

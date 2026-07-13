@@ -8,6 +8,7 @@ class TennisMatch extends Model
 {
     protected $fillable = [
         'date_played',
+        'location',
         'match_type',
         'score',
         'winning_team',

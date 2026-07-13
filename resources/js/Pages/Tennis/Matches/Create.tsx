@@ -23,6 +23,7 @@ interface Props extends PageProps {
 export default function Create({ auth, players }: Props) {
     const { data, setData, post, processing, errors } = useForm({
         date_played: '',
+        location: '',
         match_type: 'singles',
         score: '',
         winning_team: '1',
@@ -92,6 +93,21 @@ export default function Create({ auth, players }: Props) {
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                                 />
                                 <InputError message={errors.date_played} className="mt-2" />
+                            </div>
+
+                            <div className="mb-5">
+                                <label htmlFor="location" className="block mb-2 text-sm font-medium text-gray-900">
+                                    Location:
+                                </label>
+                                <input
+                                    id="location"
+                                    type="text"
+                                    placeholder="e.g. Central Park Courts"
+                                    value={data.location}
+                                    onChange={(e) => setData('location', e.target.value)}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                />
+                                <InputError message={errors.location} className="mt-2" />
                             </div>
 
                             <div className="mb-5">

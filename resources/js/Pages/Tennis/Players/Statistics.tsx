@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import PlayerWinsChart from '@/Components/PlayerWinsChart';
 import PlayerBarChart from '@/Components/PlayerBarChart';
+import PlayerStatusPieChart from '@/Components/PlayerStatusPieChart';
 import { Head } from '@inertiajs/react';
 
 interface SeriesItem {
@@ -15,6 +16,12 @@ interface PlayerStat {
     losses: number;
 }
 
+interface StatusCounts {
+    labels: string[];
+    series: number[];
+}
+
+
 interface Props {
     auth: any;
     playerWinsChart: {
@@ -22,9 +29,10 @@ interface Props {
         series: SeriesItem[];
     };
     players: PlayerStat[];
+    statusCounts: StatusCounts;
 }
 
-export default function Statistics({ auth, playerWinsChart, players }: Props) {
+export default function Statistics({ auth, playerWinsChart, players, statusCounts }: Props) {
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -42,8 +50,13 @@ export default function Statistics({ auth, playerWinsChart, players }: Props) {
                         categories={playerWinsChart.categories}
                         series={playerWinsChart.series}
                     />
-
-                    <PlayerBarChart players={players} />
+                    <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+                        <PlayerBarChart players={players} />
+                        <PlayerStatusPieChart
+                            labels={statusCounts.labels}
+                            series={statusCounts.series}
+                        />
+                    </div>
                 </div>
             </div>
         </AuthenticatedLayout>

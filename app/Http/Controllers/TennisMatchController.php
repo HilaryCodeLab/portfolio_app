@@ -13,8 +13,21 @@ class TennisMatchController extends Controller
     public function index()
     {
         return Inertia::render('Tennis/Matches/Index', [
-            // Load matches with related players and show newest matches first.
-            'matches' => TennisMatch::with('players')->latest('date_played')->get(),
+            'matches' => TennisMatch::with('players')
+                ->latest('date_played')
+                ->paginate(10)
+                ->withQueryString(),
+        ]);
+    }
+
+    public function scoring()
+    {
+        return Inertia::render('Tennis/Matches/Scoring', [
+            // Each match's players carry their rating (shown as "rank") and team via the pivot.
+            'matches' => TennisMatch::with('players')
+                ->latest('date_played')
+                ->paginate(10)
+                ->withQueryString(),
         ]);
     }
 
@@ -30,6 +43,7 @@ class TennisMatchController extends Controller
     {
         $validated = $request->validate([
             'date_played' => ['required', 'date'],
+            'location' => ['nullable', 'string', 'max:255'],
             'match_type' => ['required', 'in:singles,doubles'],
             'score' => ['nullable', 'regex:/^\d+-\d+(,\s?\d+-\d+)*$/'],
             'winning_team' => ['required', 'in:1,2'],
@@ -71,6 +85,7 @@ class TennisMatchController extends Controller
             // Create the main match record.
             $match = TennisMatch::create([
                 'date_played' => $validated['date_played'],
+                'location' => $validated['location'] ?? null,
                 'match_type' => $validated['match_type'],
                 'score' => $validated['score'],
                 'winning_team' => (int) $validated['winning_team'],
@@ -104,6 +119,7 @@ class TennisMatchController extends Controller
     {
         $validated = $request->validate([
             'date_played' => ['required', 'date'],
+            'location' => ['nullable', 'string', 'max:255'],
             'match_type' => ['required', 'in:singles,doubles'],
             'score' => ['nullable', 'regex:/^\d+-\d+(,\s?\d+-\d+)*$/'],
             'winning_team' => ['required', 'in:1,2'],
@@ -145,6 +161,7 @@ class TennisMatchController extends Controller
             // Update the match record itself.
             $match->update([
                 'date_played' => $validated['date_played'],
+                'location' => $validated['location'] ?? null,
                 'match_type' => $validated['match_type'],
                 'score' => $validated['score'],
                 'winning_team' => (int) $validated['winning_team'],

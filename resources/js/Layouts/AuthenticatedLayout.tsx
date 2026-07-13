@@ -89,12 +89,26 @@ export default function AuthenticatedLayout({
                                     </Dropdown>
                                 </div>
 
-                                <NavLink
-                                    href={route('tennis.matches.index')}
-                                    active={route().current('tennis.matches.index')}
-                                >
-                                    Tennis Matches
-                                </NavLink>
+                                <div className="relative">
+                                    <Dropdown>
+                                        <Dropdown.Trigger>
+                                            <button
+                                                type="button"
+                                                className="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium leading-5 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                            >
+                                                Tennis Matches
+                                            </button>
+                                        </Dropdown.Trigger>
+                                        <Dropdown.Content>
+                                            <Dropdown.Link href={route('tennis.matches.index')}>
+                                                List
+                                            </Dropdown.Link>
+                                            <Dropdown.Link href={route('tennis.matches.scoring')}>
+                                                Scoring
+                                            </Dropdown.Link>
+                                        </Dropdown.Content>
+                                    </Dropdown>
+                                </div>
 
 
                             </div>
@@ -235,6 +249,20 @@ export default function AuthenticatedLayout({
                             active={route().current('tennis.players.statistics')}
                         >
                             Tennis Player Statistics
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            href={route('tennis.matches.index')}
+                            active={route().current('tennis.matches.index')}
+                        >
+                            Tennis Matches List
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            href={route('tennis.matches.scoring')}
+                            active={route().current('tennis.matches.scoring')}
+                        >
+                            Tennis Matches Scoring
                         </ResponsiveNavLink>
 
                     </div>
