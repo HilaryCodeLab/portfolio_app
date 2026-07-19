@@ -46,7 +46,9 @@ CREATE TABLE `baddy_attendances` (
   `user_id` bigint unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `baddy_attendances_user_id_foreign` (`user_id`),
+  CONSTRAINT `baddy_attendances_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `cache`;
@@ -140,6 +142,9 @@ CREATE TABLE `members` (
   `user_id` bigint unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
+  `amount` decimal(8,2) NOT NULL DEFAULT '0.00',
+  `total` decimal(8,2) NOT NULL DEFAULT '0.00',
+  `addOnAmount` decimal(8,2) NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`),
   KEY `members_user_id_foreign` (`user_id`),
   CONSTRAINT `members_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
@@ -190,6 +195,56 @@ CREATE TABLE `sessions` (
   KEY `sessions_last_activity_index` (`last_activity`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tennis_match_player`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tennis_match_player` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `tennis_match_id` bigint unsigned NOT NULL,
+  `tennis_player_id` bigint unsigned NOT NULL,
+  `team` tinyint unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tennis_match_player_tennis_match_id_tennis_player_id_unique` (`tennis_match_id`,`tennis_player_id`),
+  KEY `tennis_match_player_tennis_player_id_foreign` (`tennis_player_id`),
+  CONSTRAINT `tennis_match_player_tennis_match_id_foreign` FOREIGN KEY (`tennis_match_id`) REFERENCES `tennis_matches` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `tennis_match_player_tennis_player_id_foreign` FOREIGN KEY (`tennis_player_id`) REFERENCES `tennis_players` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tennis_matches`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tennis_matches` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `date_played` date NOT NULL,
+  `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `match_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `score` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `winning_team` tinyint unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tennis_players`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tennis_players` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `rating` decimal(8,2) NOT NULL DEFAULT '0.00',
+  `matches_played` int NOT NULL DEFAULT '0',
+  `wins` int NOT NULL DEFAULT '0',
+  `losses` int NOT NULL DEFAULT '0',
+  `last_played_date` date DEFAULT NULL,
+  `last_played_date_overridden` tinyint(1) NOT NULL DEFAULT '0',
+  `status` enum('provisional','ranked','inactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'provisional',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -223,3 +278,13 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (13,'2024_09_04_091
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (14,'2024_09_04_130341_create_baddy_attendance_member_table',2);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (15,'2024_09_04_131442_remove_b_attendance_id_column',2);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (16,'2024_09_05_084211_remove_string_members_baddy_attendance',2);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (17,'2024_09_25_061144_modify_user_id_foreign_key_on_baddy_attendance',3);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (18,'2024_10_17_061401_add_amount_total_to_members',3);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (19,'2024_10_17_092038_add_add-on_amount_to_members',3);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (20,'2026_02_12_022515_create_tennis_players_table',3);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (21,'2026_03_18_075148_create_tennis_matches_table',4);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (22,'2026_03_18_075334_create_tennis_match_player_table',4);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (23,'2026_03_18_084956_add_date_played_to_tennis_matches_table',5);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (24,'2026_03_18_085614_add_match_fields_to_tennis_matches_table',6);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (25,'2026_03_19_054924_add_fields_to_tennis_match_player_table',7);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (26,'2026_07_13_021915_add_location_to_tennis_matches_table',8);
