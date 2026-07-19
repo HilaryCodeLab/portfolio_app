@@ -1,0 +1,62 @@
+# Production stack. Runs alongside the Sail dev stack (docker-compose.yml) on the
+# same Pi — separate compose project, separate volumes, no shared state.
+#
+#   docker compose -f docker-compose.prod.yml -p portfolio-prod up -d
+#
+# Only app + mysql: composer.json has no laravel/scout and no redis client, so
+# Sail's meilisearch, redis and mailpit services are unused here. Cache, queue
+# and sessions all resolve to database/file drivers.
+
+name: portfolio-prod
+
+services:
+    app:
+        image: ${APP_IMAGE:-ghcr.io/hilarycodelab/portfolio_app:latest}
+        restart: unless-stopped
+        env_file:
+            - .env.production
+        # No published ports. cloudflared reaches this over the internal network
+        # by service name, so the app is not exposed on the Pi's LAN interface.
+        expose:
+            - '80'
+        volumes:
+            - 'prod-storage:/var/www/html/storage'
+        networks:
+            - portfolio-prod
+        depends_on:
+            mysql:
+                condition: service_healthy
+
+    mysql:
+        image: 'mysql:8.0'
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_PASSWORD: '${DB_ROOT_PASSWORD}'
+            # Deliberately no MYSQL_ALLOW_EMPTY_PASSWORD and no MYSQL_ROOT_HOST='%'
+            # — docker-compose.yml sets both, and neither belongs in production.
+        # Not published either: only the app container needs the database.
+        expose:
+            - '3306'
+        volumes:
+            - 'prod-mysql:/var/lib/mysql'
+        networks:
+            - portfolio-prod
+        healthcheck:
+            test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-p${DB_ROOT_PASSWORD}']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
+
+networks:
+    portfolio-prod:
+        driver: bridge
+
+volumes:
+    prod-mysql:
+        driver: local
+    prod-storage:
+        driver: local

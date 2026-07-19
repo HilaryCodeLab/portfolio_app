@@ -1,0 +1,39 @@
+# Secrets — must never enter the build context. The production image is public.
+.env
+.env.*
+!.env.example
+
+# Installed by the build stages, never copied from the host
+node_modules
+vendor
+public/build
+public/hot
+
+# Version control and CI
+.git
+.gitignore
+.gitattributes
+
+# Local runtime state
+public/storage
+storage/logs/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/*.key
+bootstrap/cache/*.php
+
+# Dev-only tooling
+tests
+phpunit.xml
+.phpunit.cache
+.phpunit.result.cache
+docker-compose.yml
+setup_14.sh
+
+# Editor / docs
+.editorconfig
+.vscode
+.idea
+.fleet
+*.md

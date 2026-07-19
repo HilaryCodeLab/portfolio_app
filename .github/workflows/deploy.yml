@@ -1,0 +1,124 @@
+name: Deploy
+
+# Only `push` to main. Deliberately NOT `pull_request`: this repo is public, and
+# a PR-triggered build would let a fork's workflow changes run in CI.
+on:
+    push:
+        branches: [main]
+    workflow_dispatch:
+
+env:
+    REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+    test:
+        # arm64 runners are free for public repos and match the Pi's
+        # architecture, so no QEMU emulation is involved.
+        runs-on: ubuntu-24.04-arm
+
+        services:
+            # A real MySQL is required, not SQLite: database/schema/mysql-schema.sql
+            # is MySQL-specific, and the migration files alone are incomplete
+            # (create_users_table and five others were lost from git history).
+            mysql:
+                image: mysql:8.0
+                env:
+                    MYSQL_ROOT_PASSWORD: root
+                    MYSQL_DATABASE: testing
+                ports:
+                    - 3306:3306
+                options: >-
+                    --health-cmd="mysqladmin ping -h localhost -proot"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=10
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.3'
+                  extensions: pdo_mysql, bcmath, mbstring
+                  coverage: none
+                  tools: composer:v2
+
+            # Laravel shells out to the `mysql` binary to load the schema dump.
+            - name: Install MySQL client
+              run: sudo apt-get update && sudo apt-get install -y mysql-client
+
+            - name: Install PHP dependencies
+              run: composer install --prefer-dist --no-interaction --no-progress
+
+            - name: Prepare environment
+              run: |
+                  cp .env.example .env
+                  php artisan key:generate
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: npm
+
+            # Feature tests render Inertia pages through app.blade.php, which uses
+            # @vite — that throws without public/build/manifest.json, and
+            # public/build is gitignored. So assets must be built before phpunit.
+            - name: Build assets
+              run: |
+                  npm ci
+                  npm run build
+
+            - name: Run tests
+              env:
+                  DB_CONNECTION: mysql
+                  DB_HOST: 127.0.0.1
+                  DB_PORT: 3306
+                  DB_DATABASE: testing
+                  DB_USERNAME: root
+                  DB_PASSWORD: root
+              run: php artisan test
+
+    build-and-push:
+        needs: test # no image is ever published if tests fail
+        runs-on: ubuntu-24.04-arm
+
+        permissions:
+            contents: read
+            packages: write # required to push to GHCR
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: docker/setup-buildx-action@v3
+
+            - name: Log in to GHCR
+              uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }} # provided automatically
+
+            # Every image is tagged with the commit SHA as well as `latest`, so a
+            # rollback is a matter of pointing APP_IMAGE at an older SHA.
+            - name: Derive tags
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+                  tags: |
+                      type=sha,format=long
+                      type=raw,value=latest,enable={{is_default_branch}}
+
+            - name: Build and push
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  file: docker/production/Dockerfile
+                  platforms: linux/arm64
+                  push: true
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
