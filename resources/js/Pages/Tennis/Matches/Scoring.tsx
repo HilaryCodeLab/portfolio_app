@@ -75,11 +75,10 @@ interface TeamSideProps {
 function TeamSide({ heading, players, scores, isWinner }: TeamSideProps) {
     return (
         <div
-            className={`rounded-xl border p-4 ${
-                isWinner
+            className={`rounded-xl border p-4 ${isWinner
                     ? 'border-green-300 bg-green-50'
                     : 'border-gray-200 bg-gray-50'
-            }`}
+                }`}
         >
             <div className="mb-3 flex items-center justify-between">
                 <span className="text-sm font-semibold uppercase tracking-wide text-gray-500">
@@ -148,6 +147,12 @@ export default function Scoring({ auth, matches }: Props) {
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <Link
+                        href={route('tennis.matches.create')}
+                        className="inline-flex items-center px-4 py-2 mb-6 bg-gray-800 text-white rounded-md hover:bg-gray-700"
+                    >
+                        Add Match
+                    </Link>
                     {matches.data.length === 0 && (
                         <p className="text-center text-gray-500">
                             No matches to score yet.
