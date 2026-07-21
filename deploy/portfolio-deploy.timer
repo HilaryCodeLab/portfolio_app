@@ -1,0 +1,33 @@
+# When to run it. Every two minutes, so a push reaches the Pi within ~1 minute
+# on average. The check itself is a digest comparison against GHCR — a few KB
+# when nothing has changed, so a short interval costs almost nothing.
+#
+# Install:
+#   sudo cp deploy/portfolio-deploy.timer /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now portfolio-deploy.timer
+#
+# Watch it:
+#   systemctl list-timers portfolio-deploy.timer
+#   journalctl -u portfolio-deploy.service -f
+
+[Unit]
+Description=Poll GHCR for new portfolio_app images
+Requires=portfolio-deploy.service
+
+[Timer]
+# Wait for Docker and the network to settle after a reboot before the first run.
+OnBootSec=3min
+OnUnitActiveSec=2min
+
+# Spreads the check off exact minute boundaries.
+RandomizedDelaySec=15s
+
+# If the Pi was off when a timer should have fired, run once on next boot
+# instead of skipping silently.
+Persistent=true
+
+Unit=portfolio-deploy.service
+
+[Install]
+WantedBy=timers.target

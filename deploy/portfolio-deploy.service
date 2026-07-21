@@ -1,0 +1,27 @@
+# What to run. Type=oneshot: the script exits after each check rather than
+# staying resident — the timer is what makes it recur.
+#
+# Install:
+#   sudo cp deploy/portfolio-deploy.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+
+[Unit]
+Description=Deploy portfolio_app if a new image is available on GHCR
+Documentation=https://github.com/HilaryCodeLab/portfolio_app
+After=docker.service network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+
+# Runs as the ordinary user, which must be in the docker group. Deliberately
+# not root: this script needs the Docker socket and one directory, nothing more.
+User=hilary_soong
+Group=docker
+
+Environment=DEPLOY_DIR=/home/hilary_soong/portfolio-prod
+ExecStart=/usr/local/bin/portfolio-deploy
+
+# A migration on a slow SD card can take a while; don't kill it mid-flight and
+# leave the schema half-applied.
+TimeoutStartSec=900
