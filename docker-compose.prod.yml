@@ -27,16 +27,23 @@ services:
             mysql:
                 condition: service_healthy
 
+    # MariaDB rather than MySQL 8: the runtime image is Alpine-based, whose only
+    # MySQL-compatible client is mariadb-client. That client cannot authenticate
+    # to MySQL 8 (missing caching_sha2_password plugin) nor accept its
+    # auto-generated self-signed TLS cert — both of which break `artisan migrate`
+    # loading the schema dump. MariaDB pairs cleanly with the client and Laravel
+    # treats the two engines identically. The service is still named `mysql` so
+    # DB_HOST needs no change. Verified: mysql-schema.sql loads with no edits.
     mysql:
-        image: 'mysql:8.0'
+        image: 'mariadb:11'
         restart: unless-stopped
         environment:
-            MYSQL_DATABASE: '${DB_DATABASE}'
-            MYSQL_USER: '${DB_USERNAME}'
-            MYSQL_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ROOT_PASSWORD: '${DB_ROOT_PASSWORD}'
-            # Deliberately no MYSQL_ALLOW_EMPTY_PASSWORD and no MYSQL_ROOT_HOST='%'
-            # — docker-compose.yml sets both, and neither belongs in production.
+            MARIADB_DATABASE: '${DB_DATABASE}'
+            MARIADB_USER: '${DB_USERNAME}'
+            MARIADB_PASSWORD: '${DB_PASSWORD}'
+            MARIADB_ROOT_PASSWORD: '${DB_ROOT_PASSWORD}'
+            # No MARIADB_ALLOW_EMPTY_ROOT_PASSWORD and no wildcard root host —
+            # the dev compose file is looser; neither belongs in production.
         # Not published either: only the app container needs the database.
         expose:
             - '3306'
@@ -45,7 +52,7 @@ services:
         networks:
             - portfolio-prod
         healthcheck:
-            test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-p${DB_ROOT_PASSWORD}']
+            test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
             interval: 10s
             timeout: 5s
             retries: 5
