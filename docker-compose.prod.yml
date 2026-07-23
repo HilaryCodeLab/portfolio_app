@@ -27,6 +27,22 @@ services:
             mysql:
                 condition: service_healthy
 
+    # Cloudflare Tunnel. Makes an OUTBOUND connection to Cloudflare and holds it
+    # open, so the app is reachable from the internet with no inbound ports and no
+    # router changes. Visitors hit Cloudflare's edge; requests return down this
+    # connection to app:80 over the internal network. TUNNEL_TOKEN comes from
+    # .env.production and is substituted by `docker compose --env-file`.
+    cloudflared:
+        image: 'cloudflare/cloudflared:latest'
+        restart: unless-stopped
+        command: tunnel --no-autoupdate run
+        environment:
+            TUNNEL_TOKEN: '${TUNNEL_TOKEN}'
+        depends_on:
+            - app
+        networks:
+            - portfolio-prod
+
     # MariaDB rather than MySQL 8: the runtime image is Alpine-based, whose only
     # MySQL-compatible client is mariadb-client. That client cannot authenticate
     # to MySQL 8 (missing caching_sha2_password plugin) nor accept its
