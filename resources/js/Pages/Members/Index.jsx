@@ -118,63 +118,104 @@ export default function Index({ auth, members, search, sortField, sortDirection 
 
                         </div>
                     </div>
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg" style={{ height: '500px' }}>
+                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div className="p-6 text-gray-900">
+                            {/* Mobile: one card per member (below md). Flows with
+                                the page rather than the fixed-height scroll box. */}
+                            <div className="space-y-4 md:hidden">
+                                {members.map(member => (
+                                    <div
+                                        key={member.id}
+                                        className="rounded-lg border border-gray-300 p-4"
+                                    >
+                                        <div className="flex items-start justify-between gap-2">
+                                            <span className="text-lg font-semibold text-gray-900">
+                                                {member.name}
+                                            </span>
+                                            <span className="rounded bg-gray-100 px-2 py-1 text-sm font-medium text-gray-700">
+                                                {member.gender}
+                                            </span>
+                                        </div>
 
-                        <div className="p-6 text-gray-900" style={{ height: '500px', overflowY: 'auto' }} >
-                            <Scrollbar style={{ width: '100%', height: '500px', maxHeight: '500px', overflowY: 'auto' }}>
-                                <table border="1" style={{ width: '100%', textAlign: 'center' }}>
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Gender</th>
-                                            <th>Total Attendance</th>
-                                            {/* <th>Add On</th> */}
-                                            <th>Amount Owed</th>
-                                            {hasActions && <th>Actions</th>}
-                                            {/* {
-                                            members.map(member => {
-                                                member.user_id === auth.user.id &&
-                                                <th>Actions</th>
-                                            })
-                                           
-                                        } */}
+                                        <dl className="mt-3 space-y-2 text-sm">
+                                            <div className="flex justify-between">
+                                                <dt className="text-gray-500">Total Attendance</dt>
+                                                <dd className="font-medium text-gray-900">
+                                                    {member.baddy_attendances_count}
+                                                </dd>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <dt className="text-gray-500">Amount Owed</dt>
+                                                <dd className="font-medium text-gray-900">
+                                                    $ {member.total.toFixed(2)}
+                                                </dd>
+                                            </div>
+                                        </dl>
 
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {members.map(member => (
-                                            <tr key={member.id}>
-                                                <td>{member.name}</td>
-                                                <td>{member.gender}</td>
-                                                <td>{member.baddy_attendances_count}</td>
-                                                {/* <td>$ {member.addOnAmount}</td> */}
-                                                <td>$ {member.total.toFixed(2)}</td>
+                                        {member.user_id === auth.user.id && (
+                                            <div className="mt-4 flex gap-4 border-t border-gray-100 pt-3">
+                                                <Link
+                                                    href={route('members.edit', member.id)}
+                                                    className="font-medium text-red-600 hover:underline"
+                                                >
+                                                    Edit
+                                                </Link>
+                                                <button
+                                                    onClick={() => deleteItem(member)}
+                                                    className="font-medium text-blue-600 hover:underline"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
 
-                                                {/* <td>{attendance.members}</td> */}
-                                                {
-                                                    member.user_id === auth.user.id &&
-                                                    <td>
-                                                        <Link
-                                                            href={route('members.edit', member.id)}
-                                                            className='font-medium text-red-600 dark:text-red-500 hover:underline mx-1' >
-                                                            Edit
-                                                        </Link>
-                                                        <button onClick={(e) => deleteItem(member)}
-                                                            className='font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1'>
-                                                            Delete
-                                                        </button>
-
-                                                    </td>
-                                                }
-
+                            {/* Desktop: the original scrollable table (md and up). */}
+                            <div className="hidden md:block">
+                                <Scrollbar style={{ width: '100%', height: '500px', maxHeight: '500px', overflowY: 'auto' }}>
+                                    <table border="1" style={{ width: '100%', textAlign: 'center' }}>
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Gender</th>
+                                                <th>Total Attendance</th>
+                                                <th>Amount Owed</th>
+                                                {hasActions && <th>Actions</th>}
                                             </tr>
+                                        </thead>
+                                        <tbody>
+                                            {members.map(member => (
+                                                <tr key={member.id}>
+                                                    <td>{member.name}</td>
+                                                    <td>{member.gender}</td>
+                                                    <td>{member.baddy_attendances_count}</td>
+                                                    <td>$ {member.total.toFixed(2)}</td>
 
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </Scrollbar>
+                                                    {
+                                                        member.user_id === auth.user.id &&
+                                                        <td>
+                                                            <Link
+                                                                href={route('members.edit', member.id)}
+                                                                className='font-medium text-red-600 dark:text-red-500 hover:underline mx-1' >
+                                                                Edit
+                                                            </Link>
+                                                            <button onClick={(e) => deleteItem(member)}
+                                                                className='font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1'>
+                                                                Delete
+                                                            </button>
 
+                                                        </td>
+                                                    }
 
+                                                </tr>
+
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </Scrollbar>
+                            </div>
                         </div>
                     </div>
                 </div>

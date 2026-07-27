@@ -64,61 +64,129 @@ export default function Index({ auth, matches }: Props) {
 
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
-                            <table className="w-full text-center border border-gray-300">
-                                <thead className="bg-gray-100">
-                                    <tr>
-                                        <th className="px-4 py-3 border">Date</th>
-                                        <th className="px-4 py-3 border">Type</th>
-                                        <th className="px-4 py-3 border">Score</th>
-                                        <th className="px-4 py-3 border">Players</th>
-                                        <th className="px-4 py-3 border">Winner</th>
-                                        <th className="px-4 py-3 border">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {matches.data.map((match) => (
-                                        <tr key={match.id}>
-                                            <td className="px-4 py-3 border">
+                            {/* Mobile: one card per match (below md). The table
+                                doesn't fit a phone's width, so stack the fields. */}
+                            <div className="space-y-4 md:hidden">
+                                {matches.data.map((match) => (
+                                    <div
+                                        key={match.id}
+                                        className="rounded-lg border border-gray-300 p-4"
+                                    >
+                                        <div className="flex items-start justify-between gap-2">
+                                            <span className="text-lg font-semibold text-gray-900">
                                                 {formatDate(match.date_played)}
-                                            </td>
-                                            <td className="px-4 py-3 border">
+                                            </span>
+                                            <span className="rounded bg-gray-100 px-2 py-1 text-sm font-medium text-gray-700">
                                                 {match.match_type}
-                                            </td>
-                                            <td className="px-4 py-3 border">
-                                                {match.score ?? '—'}
-                                            </td>
-                                            <td className="px-4 py-3 border">
-                                                {match.players
-                                                    .map(
-                                                        (player) =>
-                                                            `${player.name} (Team ${player.pivot.team})`
-                                                    )
-                                                    .join(', ')}
-                                            </td>
-                                            <td className="px-4 py-3 border">
-                                                Team {match.winning_team}
-                                            </td>
-                                            <td className="px-4 py-3 border">
-                                                <div className="flex items-center justify-center gap-3">
-                                                    <Link
-                                                        href={route('tennis.matches.edit', match.id)}
-                                                        className="font-medium text-blue-600 hover:underline"
-                                                    >
-                                                        Edit
-                                                    </Link>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => deleteMatch(match.id)}
-                                                        className="font-medium text-red-600 hover:underline"
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </td>
+                                            </span>
+                                        </div>
+
+                                        <dl className="mt-3 space-y-2 text-sm">
+                                            <div className="flex justify-between">
+                                                <dt className="text-gray-500">Score</dt>
+                                                <dd className="font-medium text-gray-900">
+                                                    {match.score ?? '—'}
+                                                </dd>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <dt className="text-gray-500">Winner</dt>
+                                                <dd className="font-medium text-gray-900">
+                                                    Team {match.winning_team}
+                                                </dd>
+                                            </div>
+                                            <div>
+                                                <dt className="text-gray-500">Players</dt>
+                                                <dd className="mt-1 space-y-0.5 font-medium text-gray-900">
+                                                    {match.players.map((player) => (
+                                                        <div key={player.id}>
+                                                            {player.name}{' '}
+                                                            <span className="text-gray-500">
+                                                                (Team {player.pivot.team})
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </dd>
+                                            </div>
+                                        </dl>
+
+                                        <div className="mt-4 flex gap-4 border-t border-gray-100 pt-3">
+                                            <Link
+                                                href={route('tennis.matches.edit', match.id)}
+                                                className="font-medium text-blue-600 hover:underline"
+                                            >
+                                                Edit
+                                            </Link>
+                                            <button
+                                                type="button"
+                                                onClick={() => deleteMatch(match.id)}
+                                                className="font-medium text-red-600 hover:underline"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Desktop: the full table (md and up). overflow-x-auto
+                                keeps it from breaking the layout on mid widths. */}
+                            <div className="hidden overflow-x-auto md:block">
+                                <table className="w-full text-center border border-gray-300">
+                                    <thead className="bg-gray-100">
+                                        <tr>
+                                            <th className="px-4 py-3 border">Date</th>
+                                            <th className="px-4 py-3 border">Type</th>
+                                            <th className="px-4 py-3 border">Score</th>
+                                            <th className="px-4 py-3 border">Players</th>
+                                            <th className="px-4 py-3 border">Winner</th>
+                                            <th className="px-4 py-3 border">Actions</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {matches.data.map((match) => (
+                                            <tr key={match.id}>
+                                                <td className="px-4 py-3 border">
+                                                    {formatDate(match.date_played)}
+                                                </td>
+                                                <td className="px-4 py-3 border">
+                                                    {match.match_type}
+                                                </td>
+                                                <td className="px-4 py-3 border">
+                                                    {match.score ?? '—'}
+                                                </td>
+                                                <td className="px-4 py-3 border">
+                                                    {match.players
+                                                        .map(
+                                                            (player) =>
+                                                                `${player.name} (Team ${player.pivot.team})`
+                                                        )
+                                                        .join(', ')}
+                                                </td>
+                                                <td className="px-4 py-3 border">
+                                                    Team {match.winning_team}
+                                                </td>
+                                                <td className="px-4 py-3 border">
+                                                    <div className="flex items-center justify-center gap-3">
+                                                        <Link
+                                                            href={route('tennis.matches.edit', match.id)}
+                                                            className="font-medium text-blue-600 hover:underline"
+                                                        >
+                                                            Edit
+                                                        </Link>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => deleteMatch(match.id)}
+                                                            className="font-medium text-red-600 hover:underline"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
 
                             <div className="flex items-center justify-center space-x-2 p-4">
                                 <button
