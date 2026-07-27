@@ -32,19 +32,18 @@ class TennisPlayerPolicy
     }
 
     /**
-     * Only the creator may edit a player. (An admin override will be added
-     * here in a later phase.)
+     * The creator may edit a player; an admin may edit any player.
      */
     public function update(User $user, TennisPlayer $tennisPlayer): bool
     {
-        return $tennisPlayer->user_id === $user->id;
+        return $user->is_admin || $tennisPlayer->user_id === $user->id;
     }
 
     /**
-     * Only the creator may delete a player.
+     * The creator may delete a player; an admin may delete any player.
      */
     public function delete(User $user, TennisPlayer $tennisPlayer): bool
     {
-        return $tennisPlayer->user_id === $user->id;
+        return $user->is_admin || $tennisPlayer->user_id === $user->id;
     }
 }

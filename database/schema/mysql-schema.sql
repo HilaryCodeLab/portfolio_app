@@ -258,6 +258,7 @@ CREATE TABLE `users` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_admin` tinyint(1) NOT NULL DEFAULT '0',
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -296,3 +297,4 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (25,'2026_03_19_054
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (26,'2026_07_13_021915_add_location_to_tennis_matches_table',8);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (27,'2026_07_27_031454_add_user_id_to_tennis_matches_table',9);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (28,'2026_07_27_031454_add_user_id_to_tennis_players_table',9);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (29,'2026_07_27_050536_add_is_admin_to_users_table',10);

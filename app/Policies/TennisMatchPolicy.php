@@ -32,19 +32,18 @@ class TennisMatchPolicy
     }
 
     /**
-     * Only the creator may edit a match. (An admin override will be added
-     * here in a later phase.)
+     * The creator may edit a match; an admin may edit any match.
      */
     public function update(User $user, TennisMatch $tennisMatch): bool
     {
-        return $tennisMatch->user_id === $user->id;
+        return $user->is_admin || $tennisMatch->user_id === $user->id;
     }
 
     /**
-     * Only the creator may delete a match.
+     * The creator may delete a match; an admin may delete any match.
      */
     public function delete(User $user, TennisMatch $tennisMatch): bool
     {
-        return $tennisMatch->user_id === $user->id;
+        return $user->is_admin || $tennisMatch->user_id === $user->id;
     }
 }
