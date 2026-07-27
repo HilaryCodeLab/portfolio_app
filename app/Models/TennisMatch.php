@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TennisMatch extends Model
 {
     protected $fillable = [
+        'user_id',
         'date_played',
         'location',
         'match_type',
@@ -17,6 +18,11 @@ class TennisMatch extends Model
     protected $casts = [
         'date_played' => 'date',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function players()
     {

@@ -19,6 +19,9 @@ interface TennisMatch {
     score: string | null;
     winning_team: number;
     players: MatchPlayer[];
+    // Set server-side per current user: true only for the creator. Drives
+    // whether this match shows Edit/Delete.
+    can_edit: boolean;
 }
 
 interface PaginatedMatches {
@@ -109,21 +112,23 @@ export default function Index({ auth, matches }: Props) {
                                             </div>
                                         </dl>
 
-                                        <div className="mt-4 flex gap-4 border-t border-gray-100 pt-3">
-                                            <Link
-                                                href={route('tennis.matches.edit', match.id)}
-                                                className="font-medium text-blue-600 hover:underline"
-                                            >
-                                                Edit
-                                            </Link>
-                                            <button
-                                                type="button"
-                                                onClick={() => deleteMatch(match.id)}
-                                                className="font-medium text-red-600 hover:underline"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
+                                        {match.can_edit && (
+                                            <div className="mt-4 flex gap-4 border-t border-gray-100 pt-3">
+                                                <Link
+                                                    href={route('tennis.matches.edit', match.id)}
+                                                    className="font-medium text-blue-600 hover:underline"
+                                                >
+                                                    Edit
+                                                </Link>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => deleteMatch(match.id)}
+                                                    className="font-medium text-red-600 hover:underline"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -166,21 +171,25 @@ export default function Index({ auth, matches }: Props) {
                                                     Team {match.winning_team}
                                                 </td>
                                                 <td className="px-4 py-3 border">
-                                                    <div className="flex items-center justify-center gap-3">
-                                                        <Link
-                                                            href={route('tennis.matches.edit', match.id)}
-                                                            className="font-medium text-blue-600 hover:underline"
-                                                        >
-                                                            Edit
-                                                        </Link>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => deleteMatch(match.id)}
-                                                            className="font-medium text-red-600 hover:underline"
-                                                        >
-                                                            Delete
-                                                        </button>
-                                                    </div>
+                                                    {match.can_edit ? (
+                                                        <div className="flex items-center justify-center gap-3">
+                                                            <Link
+                                                                href={route('tennis.matches.edit', match.id)}
+                                                                className="font-medium text-blue-600 hover:underline"
+                                                            >
+                                                                Edit
+                                                            </Link>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => deleteMatch(match.id)}
+                                                                className="font-medium text-red-600 hover:underline"
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-gray-400">—</span>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}

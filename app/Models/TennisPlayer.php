@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TennisPlayer extends Model
 {
     protected $fillable = [
+        'user_id',
         'name',
         'rating',
         'status',
@@ -18,6 +19,11 @@ class TennisPlayer extends Model
         'last_played_date_overridden' => 'boolean',
         'rating' => 'float',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function matches()
     {

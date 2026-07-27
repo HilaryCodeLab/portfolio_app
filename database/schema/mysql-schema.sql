@@ -217,6 +217,7 @@ DROP TABLE IF EXISTS `tennis_matches`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tennis_matches` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned DEFAULT NULL,
   `date_played` date NOT NULL,
   `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `match_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -224,7 +225,9 @@ CREATE TABLE `tennis_matches` (
   `winning_team` tinyint unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `tennis_matches_user_id_foreign` (`user_id`),
+  CONSTRAINT `tennis_matches_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `tennis_players`;
@@ -232,6 +235,7 @@ DROP TABLE IF EXISTS `tennis_players`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tennis_players` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned DEFAULT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `rating` decimal(8,2) NOT NULL DEFAULT '0.00',
   `matches_played` int NOT NULL DEFAULT '0',
@@ -242,7 +246,9 @@ CREATE TABLE `tennis_players` (
   `status` enum('provisional','ranked','inactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'provisional',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `tennis_players_user_id_foreign` (`user_id`),
+  CONSTRAINT `tennis_players_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `users`;
@@ -288,3 +294,5 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (23,'2026_03_18_084
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (24,'2026_03_18_085614_add_match_fields_to_tennis_matches_table',6);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (25,'2026_03_19_054924_add_fields_to_tennis_match_player_table',7);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (26,'2026_07_13_021915_add_location_to_tennis_matches_table',8);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (27,'2026_07_27_031454_add_user_id_to_tennis_matches_table',9);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (28,'2026_07_27_031454_add_user_id_to_tennis_players_table',9);

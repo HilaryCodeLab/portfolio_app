@@ -99,21 +99,23 @@ export default function PlayersIndex({ auth, players }: Props) {
                                             </div>
                                         </dl>
 
-                                        <div className="mt-4 flex gap-4 border-t border-gray-100 pt-3">
-                                            <Link
-                                                href={route('tennis.players.edit', player.id)}
-                                                className="font-medium text-blue-600 hover:underline"
-                                            >
-                                                Edit
-                                            </Link>
-                                            <button
-                                                type="button"
-                                                onClick={() => deletePlayer(player.id)}
-                                                className="font-medium text-red-600 hover:underline"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
+                                        {player.can_edit && (
+                                            <div className="mt-4 flex gap-4 border-t border-gray-100 pt-3">
+                                                <Link
+                                                    href={route('tennis.players.edit', player.id)}
+                                                    className="font-medium text-blue-600 hover:underline"
+                                                >
+                                                    Edit
+                                                </Link>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => deletePlayer(player.id)}
+                                                    className="font-medium text-red-600 hover:underline"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -167,21 +169,25 @@ export default function PlayersIndex({ auth, players }: Props) {
                                                 </td>
 
                                                 <td className="px-4 py-3 border border-gray-300">
-                                                    <div className="flex items-center justify-center gap-4">
-                                                        <Link
-                                                            href={route('tennis.players.edit', player.id)}
-                                                            className="font-medium text-blue-600 hover:underline"
-                                                        >
-                                                            Edit
-                                                        </Link>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => deletePlayer(player.id)}
-                                                            className="font-medium text-red-600 hover:underline"
-                                                        >
-                                                            Delete
-                                                        </button>
-                                                    </div>
+                                                    {player.can_edit ? (
+                                                        <div className="flex items-center justify-center gap-4">
+                                                            <Link
+                                                                href={route('tennis.players.edit', player.id)}
+                                                                className="font-medium text-blue-600 hover:underline"
+                                                            >
+                                                                Edit
+                                                            </Link>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => deletePlayer(player.id)}
+                                                                className="font-medium text-red-600 hover:underline"
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-gray-400">—</span>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}

@@ -135,6 +135,9 @@ class TennisPlayerController extends Controller
                 'matches_played' => $player->matches->count(),
                 'last_played_date' => $latestMatch?->date_played?->toDateString(),
                 'last_played_date_overridden' => $player->last_played_date_overridden,
+                // Drives whether this row shows Edit/Delete. Computed via the
+                // policy so the rule stays server-side.
+                'can_edit' => auth()->user()->can('update', $player),
             ];
         });
 
@@ -159,6 +162,7 @@ class TennisPlayerController extends Controller
         ]);
 
         TennisPlayer::create([
+            'user_id' => $request->user()->id,
             'name' => $validated['name'],
             'status' => $validated['status'],
             'rating' => $validated['rating'] ?? 0.00,
@@ -174,6 +178,8 @@ class TennisPlayerController extends Controller
 
     public function edit(TennisPlayer $player)
     {
+        $this->authorize('update', $player);
+
         $latestMatch = $player->matches()
             ->latest('date_played')
             ->first();
@@ -203,6 +209,8 @@ class TennisPlayerController extends Controller
 
     public function update(Request $request, TennisPlayer $player)
     {
+        $this->authorize('update', $player);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'rating' => ['nullable', 'numeric', 'min:0'],
@@ -220,6 +228,8 @@ class TennisPlayerController extends Controller
 
     public function destroy(TennisPlayer $player)
     {
+        $this->authorize('delete', $player);
+
         $player->delete();
 
         return redirect()->route('tennis.players.index')

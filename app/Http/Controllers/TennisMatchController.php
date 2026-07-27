@@ -16,7 +16,15 @@ class TennisMatchController extends Controller
             'matches' => TennisMatch::with('players')
                 ->latest('date_played')
                 ->paginate(10)
-                ->withQueryString(),
+                ->withQueryString()
+                // can_edit drives which rows show Edit/Delete. Computed via the
+                // policy so the rule lives in one place (and picks up the future
+                // admin override automatically).
+                ->through(function ($match) {
+                    $match->can_edit = auth()->user()->can('update', $match);
+
+                    return $match;
+                }),
         ]);
     }
 
@@ -27,7 +35,14 @@ class TennisMatchController extends Controller
             'matches' => TennisMatch::with('players')
                 ->latest('date_played')
                 ->paginate(10)
-                ->withQueryString(),
+                ->withQueryString()
+                // can_edit drives the Edit/Delete controls, computed via the
+                // policy (same rule as the list, admin-ready).
+                ->through(function ($match) {
+                    $match->can_edit = auth()->user()->can('update', $match);
+
+                    return $match;
+                }),
         ]);
     }
 
@@ -81,9 +96,12 @@ class TennisMatchController extends Controller
             }
         }
 
-        DB::transaction(function () use ($validated, $players) {
+        $userId = $request->user()->id;
+
+        DB::transaction(function () use ($validated, $players, $userId) {
             // Create the main match record.
             $match = TennisMatch::create([
+                'user_id' => $userId,
                 'date_played' => $validated['date_played'],
                 'location' => $validated['location'] ?? null,
                 'match_type' => $validated['match_type'],
@@ -103,11 +121,14 @@ class TennisMatchController extends Controller
             $match->players()->attach($pivotData);
         });
 
-        return redirect()->route('tennis.matches.index');
+        // After creating a match, land on the scoring page.
+        return redirect()->route('tennis.matches.scoring');
     }
 
     public function edit(TennisMatch $match)
     {
+        $this->authorize('update', $match);
+
         return Inertia::render('Tennis/Matches/Edit', [
             // Load current player assignments for the edit form.
             'match' => $match->load('players'),
@@ -117,6 +138,8 @@ class TennisMatchController extends Controller
 
     public function update(Request $request, TennisMatch $match)
     {
+        $this->authorize('update', $match);
+
         $validated = $request->validate([
             'date_played' => ['required', 'date'],
             'location' => ['nullable', 'string', 'max:255'],
@@ -179,17 +202,21 @@ class TennisMatchController extends Controller
             $match->players()->sync($pivotData);
         });
 
-        return redirect()->route('tennis.matches.index');
+        // After editing a match, land on the scoring page.
+        return redirect()->route('tennis.matches.scoring');
     }
 
     public function destroy(TennisMatch $match)
     {
+        $this->authorize('delete', $match);
+
         DB::transaction(function () use ($match) {
             // Remove all pivot relationships before deleting the match.
             $match->players()->detach();
             $match->delete();
         });
 
-        return redirect()->route('tennis.matches.index');
+        // After deleting a match, land on the scoring page.
+        return redirect()->route('tennis.matches.scoring');
     }
 }

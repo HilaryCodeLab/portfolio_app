@@ -22,6 +22,10 @@ export interface Player {
 
     status: PlayerStatus;
 
+    // Set server-side per current user: true only if they may edit/delete
+    // this player (the creator). Drives the Edit/Delete controls.
+    can_edit: boolean;
+
     created_at: string;
     updated_at: string;
 }

@@ -22,6 +22,9 @@ interface ScoringMatch {
     score: string | null;
     winning_team: number;
     players: ScoringPlayer[];
+    // Set server-side per current user: true only for the creator. Drives
+    // whether this match shows Edit/Delete.
+    can_edit: boolean;
 }
 
 interface PaginatedMatches {
@@ -198,26 +201,28 @@ export default function Scoring({ auth, matches }: Props) {
                                         </div>
                                     }
                                     footer={
-                                        <div className="flex items-center justify-end gap-4">
-                                            <Link
-                                                href={route(
-                                                    'tennis.matches.edit',
-                                                    match.id
-                                                )}
-                                                className="font-medium text-blue-600 hover:underline"
-                                            >
-                                                Edit
-                                            </Link>
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    deleteMatch(match.id)
-                                                }
-                                                className="font-medium text-red-600 hover:underline"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
+                                        match.can_edit ? (
+                                            <div className="flex items-center justify-end gap-4">
+                                                <Link
+                                                    href={route(
+                                                        'tennis.matches.edit',
+                                                        match.id
+                                                    )}
+                                                    className="font-medium text-blue-600 hover:underline"
+                                                >
+                                                    Edit
+                                                </Link>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        deleteMatch(match.id)
+                                                    }
+                                                    className="font-medium text-red-600 hover:underline"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        ) : undefined
                                     }
                                 >
                                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
