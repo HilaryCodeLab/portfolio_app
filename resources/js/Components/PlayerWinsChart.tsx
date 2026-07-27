@@ -36,10 +36,14 @@ export default function PlayerWinsChart({ categories, series }: Props) {
         },
         yaxis: {
             min: 0,
-            max: 1,
-            tickAmount: 1,
+            // No hardcoded max: let the axis scale to the highest cumulative
+            // win count. forceNiceScale keeps the ticks as whole numbers.
+            forceNiceScale: true,
+            labels: {
+                formatter: (val: number) => `${Math.round(val)}`,
+            },
             title: {
-                text: 'Wins',
+                text: 'Cumulative Wins',
             },
         },
         legend: {
@@ -57,7 +61,7 @@ export default function PlayerWinsChart({ categories, series }: Props) {
         <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
             <div className="mb-6">
                 <h3 className="text-lg font-semibold text-gray-800">
-                    Player Wins By Match Date
+                    Cumulative Wins By Match Date
                 </h3>
 
             </div>

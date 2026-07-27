@@ -30,22 +30,26 @@ class TennisPlayerController extends Controller
             ->map(fn($date) => $date ? $date->format('d-m-Y') : null)
             ->toArray();
 
-        // Build line-chart series:
-        // for each player, mark 1 when they won on that match date, otherwise 0.
+        // Build line-chart series: for each player, plot their CUMULATIVE win
+        // count across match dates, so the line climbs as they accumulate wins.
+        // On dates they didn't play or lost, the running total simply carries
+        // over (the line stays flat), rather than dropping to 0.
         $lineSeries = $players->map(function ($player) use ($matches) {
             $data = [];
+            $runningWins = 0;
 
             foreach ($matches as $match) {
                 $playerInMatch = $match->players->firstWhere('id', $player->id);
 
-                // If the player did not participate in this match, record 0 for this date.
-                if (!$playerInMatch) {
-                    $data[] = 0;
-                    continue;
+                if ($playerInMatch) {
+                    $isWinner = (int) $playerInMatch->pivot->team === (int) $match->winning_team;
+
+                    if ($isWinner) {
+                        $runningWins++;
+                    }
                 }
 
-                $isWinner = (int) $playerInMatch->pivot->team === (int) $match->winning_team;
-                $data[] = $isWinner ? 1 : 0;
+                $data[] = $runningWins;
             }
 
             return [
