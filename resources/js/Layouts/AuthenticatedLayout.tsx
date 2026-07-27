@@ -100,9 +100,6 @@ export default function AuthenticatedLayout({
                                             </button>
                                         </Dropdown.Trigger>
                                         <Dropdown.Content>
-                                            <Dropdown.Link href={route('tennis.matches.index')}>
-                                                List
-                                            </Dropdown.Link>
                                             <Dropdown.Link href={route('tennis.matches.scoring')}>
                                                 Scoring
                                             </Dropdown.Link>
@@ -249,13 +246,6 @@ export default function AuthenticatedLayout({
                             active={route().current('tennis.players.statistics')}
                         >
                             Tennis Player Statistics
-                        </ResponsiveNavLink>
-
-                        <ResponsiveNavLink
-                            href={route('tennis.matches.index')}
-                            active={route().current('tennis.matches.index')}
-                        >
-                            Tennis Matches List
                         </ResponsiveNavLink>
 
                         <ResponsiveNavLink
